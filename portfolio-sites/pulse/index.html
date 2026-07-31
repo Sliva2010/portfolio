@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="PULSE — креативная студия. Дизайн, который бьёт в сердце.">
+<title>PULSE — Креативная студия</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0a0f'/><path d='M4 18h5l3-8 4 14 3-10 2 4h7' stroke='%23ff3366' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;
+  --text:#f5f5fa;--text2:#9999b0;--text3:#666680;
+  --pink:#ff3366;--pink2:#ff6690;--violet:#8b5cf6;--cyan:#06d6a0;
+  --grad:linear-gradient(135deg,var(--pink),var(--violet));
+  --font:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:'Cascadia Code','JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.6}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--pink);color:#fff}
+img{display:block;max-width:100%}
+
+/* PRELOADER */
+.preloader{position:fixed;inset:0;z-index:99999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;transition:opacity .7s,visibility .7s}
+.preloader.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.preloader-pulse{display:flex;align-items:center;gap:3px;height:40px}
+.preloader-pulse span{width:4px;height:10px;background:var(--pink);border-radius:2px;animation:eq 1s ease-in-out infinite}
+.preloader-pulse span:nth-child(2){animation-delay:.1s}
+.preloader-pulse span:nth-child(3){animation-delay:.2s}
+.preloader-pulse span:nth-child(4){animation-delay:.3s}
+.preloader-pulse span:nth-child(5){animation-delay:.4s}
+@keyframes eq{0%,100%{height:10px}50%{height:36px}}
+.preloader-name{font-family:var(--mono);font-size:14px;letter-spacing:.3em;color:var(--text2);text-transform:uppercase}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:20px 40px;display:flex;justify-content:space-between;align-items:center;transition:background .3s,padding .3s}
+.nav.scrolled{background:rgba(10,10,15,.92);backdrop-filter:blur(16px);padding:14px 40px;border-bottom:1px solid rgba(255,51,102,.08)}
+.nav-logo{font-family:var(--mono);font-size:22px;font-weight:800;letter-spacing:-.5px}
+.nav-logo em{font-style:normal;color:var(--pink)}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{font-size:13px;font-weight:600;color:var(--text2);letter-spacing:.04em;text-transform:uppercase;transition:color .3s}
+.nav-links a:hover{color:var(--pink)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:120px 40px 80px}
+.hero-bg{position:absolute;inset:0}
+.hero-mesh{position:absolute;width:600px;height:600px;border-radius:50%;filter:blur(100px);opacity:.35;animation:drift 12s ease-in-out infinite alternate}
+.hero-mesh-1{background:var(--pink);top:-15%;right:-10%}
+.hero-mesh-2{background:var(--violet);bottom:-20%;left:-10%;animation-delay:-4s}
+.hero-mesh-3{background:var(--cyan);top:50%;left:60%;width:300px;height:300px;opacity:.2;animation-delay:-8s}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(40px,-30px) scale(1.1)}}
+.hero-content{position:relative;z-index:2;max-width:1200px;margin:0 auto;width:100%}
+.hero-tag{font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--pink);margin-bottom:24px;display:flex;align-items:center;gap:12px}
+.hero-tag::before{content:'';width:40px;height:1px;background:var(--pink)}
+.hero-title{font-size:clamp(52px,12vw,120px);font-weight:900;line-height:.9;letter-spacing:-.04em;margin-bottom:32px}
+.hero-title .outline{-webkit-text-stroke:2px var(--text);color:transparent}
+.hero-title .fill{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-desc{font-size:clamp(16px,2.5vw,20px);color:var(--text2);max-width:500px;margin-bottom:48px;line-height:1.7}
+.hero-btn{display:inline-flex;align-items:center;gap:10px;padding:16px 36px;background:var(--grad);border-radius:60px;font-weight:700;font-size:15px;transition:transform .3s,box-shadow .3s;box-shadow:0 4px 30px rgba(255,51,102,.25)}
+.hero-btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 12px 40px rgba(255,51,102,.4)}
+
+/* 3D CARDS SECTION */
+.section{padding:100px 40px;max-width:1200px;margin:0 auto}
+.section-tag{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--pink);margin-bottom:12px}
+.section-title{font-size:clamp(32px,5vw,56px);font-weight:800;letter-spacing:-.03em;margin-bottom:16px}
+.section-desc{color:var(--text2);font-size:16px;max-width:500px;margin-bottom:60px}
+
+.cards-3d{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;perspective:1200px}
+.card-3d{background:var(--bg2);border:1px solid rgba(255,255,255,.05);border-radius:20px;padding:40px 28px;position:relative;overflow:hidden;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1),box-shadow .5s;will-change:transform}
+.card-3d:hover{transform:rotateY(5deg) rotateX(5deg) translateZ(20px);box-shadow:0 30px 60px rgba(0,0,0,.4),0 0 40px rgba(255,51,102,.06)}
+.card-3d::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad);opacity:0;transition:opacity .4s}
+.card-3d:hover::before{opacity:1}
+.card-num{font-family:var(--mono);font-size:64px;font-weight:900;color:rgba(255,255,255,.03);position:absolute;top:12px;right:20px;line-height:1}
+.card-icon{width:56px;height:56px;border-radius:14px;background:rgba(255,51,102,.08);display:flex;align-items:center;justify-content:center;margin-bottom:24px;font-size:24px}
+.card-3d h3{font-size:20px;font-weight:700;margin-bottom:12px}
+.card-3d p{font-size:14px;color:var(--text2);line-height:1.7}
+
+/* SHOWCASE */
+.showcase{padding:100px 40px;max-width:1200px;margin:0 auto}
+.showcase-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.showcase-item{position:relative;border-radius:16px;overflow:hidden;aspect-ratio:4/3;background:var(--bg2)}
+.showcase-item img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.4,0,.2,1)}
+.showcase-item:hover img{transform:scale(1.08)}
+.showcase-item::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,15,.8) 0%,transparent 60%)}
+.showcase-info{position:absolute;bottom:24px;left:24px;z-index:2}
+.showcase-info h4{font-size:18px;font-weight:700;margin-bottom:4px}
+.showcase-info span{font-size:12px;font-family:var(--mono);color:var(--pink);letter-spacing:.08em;text-transform:uppercase}
+.showcase-item.big{grid-column:span 2;aspect-ratio:21/9}
+
+/* MARQUEE */
+.marquee{overflow:hidden;padding:40px 0;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04)}
+.marquee-inner{display:flex;gap:60px;animation:marquee 20s linear infinite;width:max-content}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.marquee-item{font-size:clamp(24px,4vw,48px);font-weight:900;white-space:nowrap;color:rgba(255,255,255,.06);text-transform:uppercase;letter-spacing:-.02em}
+.marquee-item em{font-style:normal;-webkit-text-stroke:1px rgba(255,51,102,.3);color:transparent}
+
+/* PROCESS */
+.process-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;counter-reset:step}
+.step{padding:32px 24px;background:var(--bg2);border-radius:16px;border:1px solid rgba(255,255,255,.04);position:relative;counter-increment:step;transition:border-color .3s,transform .3s}
+.step:hover{border-color:rgba(255,51,102,.2);transform:translateY(-4px)}
+.step::before{content:'0' counter(step);font-family:var(--mono);font-size:11px;color:var(--pink);letter-spacing:.1em;display:block;margin-bottom:16px}
+.step h4{font-size:16px;font-weight:700;margin-bottom:8px}
+.step p{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* CTA */
+.cta{text-align:center;padding:120px 40px;position:relative}
+.cta-title{font-size:clamp(36px,7vw,72px);font-weight:900;letter-spacing:-.03em;margin-bottom:20px}
+.cta-title .grad{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cta-desc{color:var(--text2);font-size:18px;margin-bottom:40px}
+.cta-btn{display:inline-flex;padding:18px 48px;background:var(--grad);border-radius:60px;font-weight:700;font-size:16px;transition:transform .3s,box-shadow .3s;box-shadow:0 4px 30px rgba(255,51,102,.25)}
+.cta-btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 12px 50px rgba(255,51,102,.4)}
+
+/* FOOTER */
+.footer{padding:40px;text-align:center;border-top:1px solid rgba(255,255,255,.04);color:var(--text3);font-size:13px}
+.footer a{color:var(--pink);transition:opacity .3s}
+.footer a:hover{opacity:.7}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s cubic-bezier(.4,0,.2,1)}
+.reveal.vis{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  .reveal{opacity:1;transform:none}
+  .marquee-inner{animation:none}
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .cards-3d{grid-template-columns:1fr}
+  .showcase-grid{grid-template-columns:1fr}
+  .showcase-item.big{grid-column:span 1;aspect-ratio:4/3}
+  .process-steps{grid-template-columns:1fr 1fr}
+  .nav-links{display:none}
+}
+@media(max-width:600px){
+  .hero{padding:100px 20px 60px}
+  .section,.showcase{padding:60px 20px}
+  .nav{padding:16px 20px}
+  .process-steps{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="preloader" id="preloader">
+  <div class="preloader-pulse"><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="preloader-name">PULSE</div>
+</div>
+
+<nav class="nav" id="nav">
+  <a href="#" class="nav-logo">PULSE<em>.</em></a>
+  <ul class="nav-links">
+    <li><a href="#services">Услуги</a></li>
+    <li><a href="#work">Работы</a></li>
+    <li><a href="#process">Процесс</a></li>
+    <li><a href="#contact">Контакт</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="hero-mesh hero-mesh-1"></div>
+    <div class="hero-mesh hero-mesh-2"></div>
+    <div class="hero-mesh hero-mesh-3"></div>
+  </div>
+  <div class="hero-content">
+    <p class="hero-tag">Креативная студия</p>
+    <h1 class="hero-title"><span class="outline">Дизайн</span><br><span class="fill">который бьёт</span><br>в сердце</h1>
+    <p class="hero-desc">Создаём цифровые продукты с пульсом. Брендинг, веб-дизайн, моушн — всё, чтобы ваш проект ожил.</p>
+    <a href="#work" class="hero-btn">Смотреть работы ↓</a>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-inner">
+    <span class="marquee-item">Брендинг</span>
+    <span class="marquee-item"><em>Веб-дизайн</em></span>
+    <span class="marquee-item">Моушн</span>
+    <span class="marquee-item"><em>3D</em></span>
+    <span class="marquee-item">UI/UX</span>
+    <span class="marquee-item"><em>Разработка</em></span>
+    <span class="marquee-item">Брендинг</span>
+    <span class="marquee-item"><em>Веб-дизайн</em></span>
+    <span class="marquee-item">Моушн</span>
+    <span class="marquee-item"><em>3D</em></span>
+    <span class="marquee-item">UI/UX</span>
+    <span class="marquee-item"><em>Разработка</em></span>
+  </div>
+</div>
+
+<section class="section" id="services">
+  <p class="section-tag reveal">Что мы делаем</p>
+  <h2 class="section-title reveal">Услуги</h2>
+  <p class="section-desc reveal">Полный цикл — от идеи до запуска. Каждый проект ведём как свой.</p>
+  <div class="cards-3d">
+    <div class="card-3d reveal">
+      <span class="card-num">01</span>
+      <div class="card-icon">🎨</div>
+      <h3>Брендинг</h3>
+      <p>Логотип, айдентика, гайдлайны. Создаём визуальный язык, который узнают с первого взгляда.</p>
+    </div>
+    <div class="card-3d reveal">
+      <span class="card-num">02</span>
+      <div class="card-icon">💻</div>
+      <h3>Веб-дизайн и разработка</h3>
+      <p>Сайты и приложения с характером. Анимации, 3D, интерактив — без компромиссов по скорости.</p>
+    </div>
+    <div class="card-3d reveal">
+      <span class="card-num">03</span>
+      <div class="card-icon">🎬</div>
+      <h3>Моушн-дизайн</h3>
+      <p>Анимация интерфейсов, рекламные ролики, заставки. Движение, которое удерживает внимание.</p>
+    </div>
+  </div>
+</section>
+
+<section class="showcase" id="work">
+  <p class="section-tag reveal">Портфолио</p>
+  <h2 class="section-title reveal">Работы</h2>
+  <p class="section-desc reveal">Проекты, которыми гордимся.</p>
+  <div class="showcase-grid">
+    <div class="showcase-item big reveal">
+      <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1000&q=80" alt="3D абстракция" loading="lazy">
+      <div class="showcase-info"><h4>Neon Dreams</h4><span>Брендинг · 3D</span></div>
+    </div>
+    <div class="showcase-item reveal">
+      <img src="https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=600&q=80" alt="Абстрактный дизайн" loading="lazy">
+      <div class="showcase-info"><h4>Flow App</h4><span>UI/UX · Разработка</span></div>
+    </div>
+    <div class="showcase-item reveal">
+      <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&q=80" alt="Ретро технологии" loading="lazy">
+      <div class="showcase-info"><h4>Retro Wave</h4><span>Моушн · Айдентика</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="process">
+  <p class="section-tag reveal">Как мы работаем</p>
+  <h2 class="section-title reveal">Процесс</h2>
+  <p class="section-desc reveal">Четыре шага от брифа до запуска.</p>
+  <div class="process-steps">
+    <div class="step reveal"><h4>Бриф и исследование</h4><p>Погружаемся в задачу, изучаем аудиторию и конкурентов.</p></div>
+    <div class="step reveal"><h4>Концепция</h4><p>Собираем мудборд, скетчи, прототип. Утверждаем направление.</p></div>
+    <div class="step reveal"><h4>Дизайн и анимация</h4><p>Отрисовка макетов, моушн, 3D. Пиксель-перфект.</p></div>
+    <div class="step reveal"><h4>Разработка и запуск</h4><p>Чистый код, тесты, деплой. Поддержка после запуска.</p></div>
+  </div>
+</section>
+
+<section class="cta" id="contact">
+  <h2 class="cta-title reveal">Есть проект?<br><span class="grad">Давайте обсудим</span></h2>
+  <p class="cta-desc reveal">Расскажите идею — вернём концепцию за 48 часов.</p>
+  <a href="mailto:hello@pulse.studio" class="cta-btn reveal">Написать нам</a>
+</section>
+
+<footer class="footer">
+  <p>© 2026 PULSE Studio. Концептуальный проект для портфолио. · <a href="../../index.html">← Все проекты</a></p>
+</footer>
+
+<script>
+(function(){
+'use strict';
+window.addEventListener('load',function(){setTimeout(function(){var p=document.getElementById('preloader');if(p)p.classList.add('hidden');},1800);});
+
+var nav=document.getElementById('nav');
+window.addEventListener('scroll',function(){nav.classList.toggle('scrolled',window.scrollY>60);},{passive:true});
+
+if(window.IntersectionObserver){
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target);}});
+  },{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
+}else{
+  document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('vis');});
+}
+
+if(window.matchMedia('(pointer:fine)').matches&&!window.matchMedia('(prefers-reduced-motion:reduce)').matches){
+  document.querySelectorAll('.card-3d').forEach(function(card){
+    card.addEventListener('mousemove',function(e){
+      var r=card.getBoundingClientRect();
+      var x=(e.clientX-r.left)/r.width-.5;
+      var y=(e.clientY-r.top)/r.height-.5;
+      card.style.transform='rotateY('+(x*10)+'deg) rotateX('+(y*-10)+'deg) translateZ(20px)';
+    });
+    card.addEventListener('mouseleave',function(){card.style.transform='';});
+  });
+}
+})();
+</script>
+</body>
+</html>
