@@ -269,6 +269,47 @@ ul,ol{list-style:none}
 .preloader-ring{width:60px;height:60px;border-radius:50%;border:2px solid var(--border);border-top-color:var(--blue-600);border-right-color:var(--amber-600);animation:preloader-spin 1s linear infinite}
 @keyframes preloader-spin{to{transform:rotate(360deg)}}
 .preloader-logo{font-family:var(--font);font-size:20px;letter-spacing:.3em;color:var(--blue-900);text-transform:uppercase;font-weight:800}
+
+/* ===== PREMIUM UPGRADES ===== */
+.scroll-progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:1002;pointer-events:none}
+.scroll-progress-bar{height:100%;background:linear-gradient(90deg,var(--blue-600),var(--amber-600));transform:scaleX(0);transform-origin:0 50%}
+
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:var(--bg-page)}
+::-webkit-scrollbar-thumb{background:var(--blue-200);border-radius:6px;border:2px solid var(--bg-page)}
+::-webkit-scrollbar-thumb:hover{background:var(--blue-400)}
+
+/* Nav shadow on scroll */
+.nav{transition:box-shadow .4s var(--ease-out-expo)}
+.nav.scrolled{box-shadow:0 4px 24px rgba(13,27,74,.08)}
+
+/* Hero choreography */
+.hero-badge,.hero h1,.hero p,.hero-cta{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease-out-expo),transform .8s var(--ease-out-expo)}
+body.loaded .hero-badge{opacity:1;transform:none}
+body.loaded .hero h1{opacity:1;transform:none;transition-delay:.12s}
+body.loaded .hero p{opacity:1;transform:none;transition-delay:.24s}
+body.loaded .hero-cta{opacity:1;transform:none;transition-delay:.36s}
+
+/* JS-driven reveal */
+.io-reveal{opacity:0;transform:translateY(30px);transition:opacity .8s var(--ease-out-expo),transform .8s var(--ease-out-expo)}
+.io-reveal.in-view{opacity:1;transform:translateY(0)}
+
+/* Dashboard entrance */
+.dashboard{opacity:0;transform:translateY(40px) scale(.985);transition:opacity 1s var(--ease-out-expo),transform 1s var(--ease-out-expo)}
+.dashboard.in-view{opacity:1;transform:none}
+
+/* Metric & rec stagger pop on re-render */
+.metric-card{animation:metricIn .5s var(--ease-out-expo) backwards}
+@keyframes metricIn{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:none}}
+.rec-item{animation:metricIn .45s var(--ease-out-expo) backwards}
+
+.magnetic{will-change:transform}
+
+@media(prefers-reduced-motion:reduce){
+  .io-reveal,.dashboard{opacity:1;transform:none}
+  .metric-card,.rec-item{animation:none}
+  .hero-badge,.hero h1,.hero p,.hero-cta{opacity:1;transform:none}
+}
 </style>
 </head>
 <body>
@@ -279,6 +320,8 @@ ul,ol{list-style:none}
     <span class="preloader-logo">ORBIT</span>
   </div>
 </div>
+
+<div class="scroll-progress" aria-hidden="true"><div class="scroll-progress-bar" id="scroll-progress-bar"></div></div>
 
 <!-- Skip link -->
 <a href="#dashboard" class="skip-link">Перейти к дашборду</a>
@@ -305,8 +348,8 @@ ul,ol{list-style:none}
     <h1 id="hero-title">Аналитика, которую <span>видно</span></h1>
     <p>ORBIT собирает разрозненные данные вашего бизнеса в&nbsp;единый дашборд с&nbsp;понятными графиками, прогнозами и&nbsp;рекомендациями. Без SQL, без боли.</p>
     <div class="hero-cta">
-      <a href="#dashboard" class="btn btn-primary">Смотреть демо-дашборд</a>
-      <a href="#features" class="btn btn-outline">Что внутри</a>
+      <a href="#dashboard" class="btn btn-primary magnetic">Смотреть демо-дашборд</a>
+      <a href="#features" class="btn btn-outline magnetic">Что внутри</a>
     </div>
   </section>
 
@@ -474,7 +517,67 @@ ul,ol{list-style:none}
 </footer>
 
 <script>
-window.addEventListener('load',function(){setTimeout(function(){var p=document.getElementById('preloader');if(p)p.classList.add('hidden');},2000);});
+function ready(){var p=document.getElementById('preloader');if(p)p.classList.add('hidden');document.body.classList.add('loaded');}
+window.addEventListener('load',function(){setTimeout(ready,1800);});
+setTimeout(ready,4000);
+
+/* ===== PREMIUM: progress, reveals, magnetic ===== */
+var finePointer=window.matchMedia('(pointer:fine)').matches;
+var reducedMotion=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+var navEl=document.querySelector('.nav');
+var progressBar=document.getElementById('scroll-progress-bar');
+var scrollTicking=false;
+function onScroll(){
+  if(scrollTicking)return;scrollTicking=true;
+  requestAnimationFrame(function(){
+    navEl.classList.toggle('scrolled',window.scrollY>24);
+    var h=document.documentElement.scrollHeight-innerHeight;
+    progressBar.style.transform='scaleX('+(h>0?window.scrollY/h:0)+')';
+    scrollTicking=false;
+  });
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+onScroll();
+
+if(window.IntersectionObserver&&!reducedMotion){
+  var revealTargets=document.querySelectorAll('.section-head,.feat-card,.onboard-step,.onboard-cta');
+  revealTargets.forEach(function(el,i){
+    el.classList.add('io-reveal');
+    el.style.transitionDelay=(i%3)*.09+'s';
+  });
+  var dashEl=document.querySelector('.dashboard');
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        en.target.classList.add('in-view');
+        io.unobserve(en.target);
+      }
+    });
+  },{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+  revealTargets.forEach(function(el){io.observe(el);});
+  if(dashEl) io.observe(dashEl);
+}else{
+  var d=document.querySelector('.dashboard');
+  if(d)d.classList.add('in-view');
+}
+
+if(finePointer&&!reducedMotion){
+  document.querySelectorAll('.magnetic').forEach(function(el){
+    var strength=12;
+    el.addEventListener('mousemove',function(e){
+      var r=el.getBoundingClientRect();
+      var x=(e.clientX-r.left-r.width/2)/(r.width/2);
+      var y=(e.clientY-r.top-r.height/2)/(r.height/2);
+      el.style.transition='transform .2s cubic-bezier(.2,.8,.2,1)';
+      el.style.transform='translate('+(x*strength)+'px,'+(y*strength*.7)+'px)';
+    });
+    el.addEventListener('mouseleave',function(){
+      el.style.transition='transform .7s cubic-bezier(.34,1.56,.64,1)';
+      el.style.transform='';
+    });
+  });
+}
 /* ===== DATA ===== */
 const DATA = {
   shop: {
@@ -651,8 +754,8 @@ function render(){
 
 /* ===== METRICS ===== */
 function renderMetrics(metrics){
-  dom.metricGrid.innerHTML = metrics.map(m=>`
-    <div class="metric-card trend-${m.trend}">
+  dom.metricGrid.innerHTML = metrics.map((m,i)=>`
+    <div class="metric-card trend-${m.trend}" style="animation-delay:${i*70}ms">
       <div class="metric-card-label">${m.label}</div>
       <div class="metric-card-value">${m.value}<small>${m.unit}</small></div>
       <div class="metric-card-change ${m.trend==='up'?'up':m.trend==='down'?'down':'neutral'}">${m.change}%</div>
@@ -662,8 +765,8 @@ function renderMetrics(metrics){
 
 /* ===== RECOMMENDATIONS ===== */
 function renderRecommendations(recs){
-  dom.recList.innerHTML = recs.map(r=>`
-    <div class="rec-item">
+  dom.recList.innerHTML = recs.map((r,i)=>`
+    <div class="rec-item" style="animation-delay:${i*90}ms">
       <div class="rec-icon ${r.icon}" aria-hidden="true">${r.icon==='ok'?'✓':r.icon==='warn'?'!':'i'}</div>
       <span>${r.text}</span>
     </div>

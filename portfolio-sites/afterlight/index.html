@@ -498,6 +498,45 @@ body {
 /* ── Hero Background ── */
 .hero{background-image:radial-gradient(ellipse at 70% 50%,rgba(108,92,231,.08) 0%,transparent 50%),url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&q=60');background-size:cover;background-position:center;background-blend-mode:overlay}
 .hero::before{content:'';position:absolute;inset:0;background:rgba(28,10,36,.75);z-index:0}
+
+/* ── Premium Upgrades ── */
+.scroll-progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:10002;pointer-events:none}
+.scroll-progress-bar{height:100%;background:linear-gradient(90deg,var(--coral),var(--electric));transform:scaleX(0);transform-origin:0 50%}
+
+.grain{position:fixed;inset:-100%;z-index:10001;pointer-events:none;opacity:.04;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain 9s steps(10) infinite}
+@keyframes grain{0%,100%{transform:translate(0,0)}10%{transform:translate(-3%,-5%)}30%{transform:translate(4%,2%)}50%{transform:translate(-4%,6%)}70%{transform:translate(5%,-3%)}90%{transform:translate(-2%,4%)}}
+
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:var(--plum-deep)}
+::-webkit-scrollbar-thumb{background:var(--plum-light);border-radius:6px;border:2px solid var(--plum-deep)}
+::-webkit-scrollbar-thumb:hover{background:var(--coral-dim)}
+
+/* Hero masked-line choreography */
+.hero-title .mask{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
+.hero-title .mask>span{transform:translateY(115%);transition:transform 1.2s var(--ease-out-expo)}
+body.loaded .hero-title .mask>span{transform:translateY(0)}
+body.loaded .hero-title .mask:nth-child(2)>span{transition-delay:.15s}
+.hero-subtitle,.hero-date,.hero-cta{opacity:0;transform:translateY(24px);transition:opacity .9s var(--ease-out-expo),transform .9s var(--ease-out-expo)}
+body.loaded .hero-subtitle{opacity:1;transform:none;transition-delay:.35s}
+body.loaded .hero-date{opacity:1;transform:none;transition-delay:.5s}
+body.loaded .hero-cta{opacity:1;transform:none;transition-delay:.65s}
+.hero-ring{opacity:0;transition:opacity 1.4s ease .8s}
+body.loaded .hero-ring{opacity:1}
+
+/* JS-driven reveal (class added by JS, so no-JS keeps content visible) */
+.io-reveal{opacity:0;transform:translateY(36px);filter:blur(8px);transition:opacity .9s var(--ease-out-expo),transform .9s var(--ease-out-expo),filter .9s var(--ease-out-expo)}
+.io-reveal.in-view{opacity:1;transform:translateY(0);filter:blur(0)}
+@media (prefers-reduced-motion: reduce){.io-reveal{opacity:1;transform:none;filter:none}.grain{display:none}}
+
+/* Twinkling background stars */
+#bg-stars circle{animation:twinkle 4s ease-in-out infinite}
+#bg-stars circle:nth-child(3n){animation-delay:-1.3s}
+#bg-stars circle:nth-child(4n){animation-delay:-2.1s}
+#bg-stars circle:nth-child(5n){animation-delay:-2.8s}
+@keyframes twinkle{0%,100%{opacity:.35}50%{opacity:1}}
+@media (prefers-reduced-motion: reduce){#bg-stars circle{animation:none}}
+
+.magnetic{will-change:transform}
 </style>
 </head>
 <body>
@@ -514,6 +553,9 @@ body {
 
 <!-- Cursor Aura (JS-managed) -->
 <div class="cursor-aura" aria-hidden="true"></div>
+
+<div class="scroll-progress" aria-hidden="true"><div class="scroll-progress-bar" id="scroll-progress-bar"></div></div>
+<div class="grain" aria-hidden="true"></div>
 
 <!-- Header -->
 <header class="site-header" role="banner">
@@ -543,14 +585,14 @@ body {
   </div>
   <div class="container">
     <h1 id="hero-heading" class="hero-title">
-      <span class="line1">AFTER</span>
-      <span class="line2">LIGHT</span>
+      <span class="mask"><span class="line1">AFTER</span></span>
+      <span class="mask"><span class="line2">LIGHT</span></span>
     </h1>
     <p class="hero-subtitle">Фестиваль цифрового искусства</p>
     <p class="hero-date">12 – 14 сентября 2026 &nbsp;·&nbsp; Санкт-Петербург</p>
     <div class="hero-cta">
-      <a href="#program" class="btn btn-primary">Исследовать программу</a>
-      <a href="#tickets" class="btn btn-outline">Билеты</a>
+      <a href="#program" class="btn btn-primary magnetic">Исследовать программу</a>
+      <a href="#tickets" class="btn btn-outline magnetic">Билеты</a>
     </div>
   </div>
 </section>
@@ -792,7 +834,9 @@ body {
 <script>
 'use strict';
 
-window.addEventListener('load',function(){setTimeout(function(){var p=document.getElementById('preloader');if(p)p.classList.add('hidden');},2200);});
+function ready(){var p=document.getElementById('preloader');if(p)p.classList.add('hidden');document.body.classList.add('loaded');}
+window.addEventListener('load',function(){setTimeout(ready,2000);});
+setTimeout(ready,4200);
 
 // ── Data: Festival Events ──
 const EVENTS = [
@@ -1157,20 +1201,73 @@ btnClearRoute.addEventListener('click', () => {
   updateRouteUI();
 });
 
-// ── Cursor Aura ──
+// ── Cursor Aura (lerp-smoothed) ──
 const aura = document.querySelector('.cursor-aura');
-let auraTimeout;
-document.addEventListener('mousemove', (e) => {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  aura.style.setProperty('--mx', e.clientX + 'px');
-  aura.style.setProperty('--my', e.clientY + 'px');
-  aura.style.opacity = '1';
-  clearTimeout(auraTimeout);
-  auraTimeout = setTimeout(() => { aura.style.opacity = '0'; }, 1500);
-});
+const finePointer = window.matchMedia('(pointer: fine)').matches;
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (finePointer && !reducedMotion) {
+  let ax = innerWidth/2, ay = innerHeight/2, tx = ax, ty = ay, auraTimeout;
+  document.addEventListener('mousemove', (e) => {
+    tx = e.clientX; ty = e.clientY;
+    aura.style.opacity = '1';
+    clearTimeout(auraTimeout);
+    auraTimeout = setTimeout(() => { aura.style.opacity = '0'; }, 1500);
+  });
+  (function auraLoop(){
+    ax += (tx - ax) * .09; ay += (ty - ay) * .09;
+    aura.style.setProperty('--mx', ax + 'px');
+    aura.style.setProperty('--my', ay + 'px');
+    requestAnimationFrame(auraLoop);
+  })();
+  document.addEventListener('mouseleave', () => { aura.style.opacity = '0'; });
+} else {
+  aura.style.display = 'none';
+}
 
-// Hide aura when mouse leaves window
-document.addEventListener('mouseleave', () => { aura.style.opacity = '0'; });
+// ── Scroll progress (rAF-throttled) ──
+const progressBar = document.getElementById('scroll-progress-bar');
+let scrollTicking = false;
+window.addEventListener('scroll', () => {
+  if (scrollTicking) return; scrollTicking = true;
+  requestAnimationFrame(() => {
+    const h = document.documentElement.scrollHeight - innerHeight;
+    progressBar.style.transform = 'scaleX(' + (h > 0 ? scrollY / h : 0) + ')';
+    scrollTicking = false;
+  });
+}, { passive: true });
+
+// ── Reveal on scroll (io-reveal) ──
+if (window.IntersectionObserver && !reducedMotion) {
+  const revealTargets = document.querySelectorAll('.section-label, .section-title, .manifesto-text, .manifesto-viz, .program-filters, .constellation-stage, .route-panel, .artist-card, .ticket-card');
+  revealTargets.forEach((el, i) => {
+    el.classList.add('io-reveal');
+    el.style.transitionDelay = (i % 4) * 0.08 + 's';
+  });
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(en => {
+      if (en.isIntersecting) { en.target.classList.add('in-view'); io.unobserve(en.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  revealTargets.forEach(el => io.observe(el));
+}
+
+// ── Magnetic buttons ──
+if (finePointer && !reducedMotion) {
+  document.querySelectorAll('.magnetic').forEach(el => {
+    const strength = 18;
+    el.addEventListener('mousemove', (e) => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width/2) / (r.width/2);
+      const y = (e.clientY - r.top - r.height/2) / (r.height/2);
+      el.style.transition = 'transform .2s cubic-bezier(.2,.8,.2,1)';
+      el.style.transform = 'translate(' + (x*strength) + 'px,' + (y*strength*.7) + 'px)';
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transition = 'transform .7s cubic-bezier(.34,1.56,.64,1)';
+      el.style.transform = '';
+    });
+  });
+}
 
 // ── Mobile nav toggle ──
 const btnBurger = document.querySelector('.btn-burger');
