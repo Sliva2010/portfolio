@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AFTERLIGHT — концептуальный фестиваль цифрового искусства. Программа-созвездие, интерактивный маршрут.">
+<meta name="theme-color" content="#1c0a24">
+<title>AFTERLIGHT — Фестиваль цифрового искусства</title>
+<style>
+/* ============================================================
+   DESIGN SYSTEM
+   Core palette:
+   --plum-deep:   hsl(282,55%,9%)    deep background
+   --plum-mid:    hsl(280,40%,15%)   elevated surfaces
+   --plum-light:  hsl(278,30%,25%)   subtle contrast
+   --coral:       hsl(6,100%,68%)    primary accent
+   --electric:    hsl(191,100%,55%)   secondary accent
+   --sand:        hsl(40,55%,87%)    text, highlights
+   --sand-dark:   hsl(38,35%,65%)    muted text
+   ============================================================ */
+
+:root {
+  --plum-deep:    hsl(282, 55%, 9%);
+  --plum-mid:     hsl(280, 40%, 15%);
+  --plum-light:   hsl(278, 30%, 25%);
+  --coral:        hsl(6, 100%, 68%);
+  --coral-dim:    hsl(6, 55%, 38%);
+  --electric:     hsl(191, 100%, 55%);
+  --electric-dim: hsl(191, 50%, 32%);
+  --sand:         hsl(40, 55%, 87%);
+  --sand-dark:    hsl(38, 35%, 65%);
+  --sand-dimmer:  hsl(36, 25%, 45%);
+  --font-display: 'Georgia', 'Times New Roman', serif;
+  --font-body:    system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'Courier New', 'Consolas', monospace;
+}
+
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--plum-deep);
+  color: var(--sand);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Cursor Aura ── */
+.cursor-aura {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 9999;
+  background: radial-gradient(500px circle at var(--mx, 50vw) var(--my, 50vh),
+    hsla(6, 100%, 68%, 0.06) 0%, transparent 60%);
+  transition: opacity 0.6s;
+}
+
+@media (prefers-reduced-motion: reduce) { .cursor-aura { display: none; } }
+
+/* ── Focus ── */
+:focus-visible {
+  outline: 3px solid var(--electric);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ── Skip Link ── */
+.skip-link {
+  position: absolute; top: -100px; left: 1rem; z-index: 10000;
+  background: var(--electric); color: var(--plum-deep);
+  padding: 0.75rem 1.5rem; font-weight: 700; text-decoration: none;
+  border-radius: 0 0 4px 4px; font-size: 0.95rem;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 0; }
+
+/* ── Layout ── */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+.section { padding: 5rem 0; position: relative; }
+.section-label {
+  display: block; font-family: var(--font-mono); font-size: 0.75rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--electric); margin-bottom: 1rem;
+}
+.section-title {
+  font-family: var(--font-display); font-size: clamp(2.2rem, 5vw, 4rem);
+  font-weight: 700; line-height: 1.1; margin-bottom: 2rem;
+  color: var(--sand);
+}
+.section-title em { font-style: normal; color: var(--coral); }
+
+/* ── Header ── */
+.site-header {
+  position: sticky; top: 0; z-index: 100;
+  background: hsla(282, 55%, 9%, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid hsl(280, 40%, 20%);
+  padding: 0.75rem 0;
+}
+.header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+}
+.logo {
+  font-family: var(--font-display); font-size: 1.4rem; font-weight: 700;
+  letter-spacing: 0.08em; color: var(--sand); text-decoration: none;
+}
+.logo span { color: var(--electric); }
+.nav-list { display: flex; list-style: none; gap: 1.5rem; flex-wrap: wrap; }
+.nav-list a {
+  color: var(--sand-dark); text-decoration: none;
+  font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase;
+  transition: color 0.2s;
+}
+.nav-list a:hover, .nav-list a:focus-visible { color: var(--coral); }
+.btn-burger {
+  display: none; background: none; border: none; color: var(--sand);
+  font-size: 1.6rem; cursor: pointer; padding: 0.25rem 0.5rem;
+}
+
+/* ── Hero ── */
+.hero {
+  min-height: 85vh; display: flex; align-items: center; position: relative;
+  overflow: hidden;
+}
+.hero .container { position: relative; z-index: 2; }
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 10vw, 8rem);
+  font-weight: 900; line-height: 0.9; letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+}
+.hero-title .line1 { display: block; color: var(--sand); }
+.hero-title .line2 { display: block; color: var(--electric); }
+.hero-subtitle {
+  font-size: clamp(1rem, 2.5vw, 1.3rem); font-weight: 400;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--sand-dark); margin-bottom: 0.5rem;
+}
+.hero-date {
+  font-family: var(--font-mono); font-size: 1.1rem; letter-spacing: 0.1em;
+  color: var(--coral); margin-bottom: 2.5rem;
+}
+.hero-cta {
+  display: inline-flex; gap: 1.5rem; flex-wrap: wrap;
+}
+.btn {
+  display: inline-block; padding: 0.9rem 2.2rem; font-size: 0.9rem;
+  font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  text-decoration: none; border: none; cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+  border-radius: 2px; font-family: var(--font-body);
+}
+.btn:hover { transform: translateY(-2px); }
+.btn-primary { background: var(--coral); color: var(--plum-deep); }
+.btn-primary:hover { background: hsl(6, 85%, 62%); }
+.btn-outline {
+  background: transparent; color: var(--electric);
+  border: 2px solid var(--electric);
+}
+.btn-outline:hover { background: var(--electric); color: var(--plum-deep); }
+.btn-sm { padding: 0.5rem 1.2rem; font-size: 0.78rem; letter-spacing: 0.06em; }
+
+/* hero decorative ring */
+.hero-ring {
+  position: absolute; right: -8rem; top: 50%; transform: translateY(-50%);
+  width: min(600px, 80vw); height: min(600px, 80vw);
+  border: 2px solid hsl(280, 40%, 18%);
+  border-radius: 50%; z-index: 1;
+}
+.hero-ring::after {
+  content: ''; position: absolute; top: 12%; left: 12%;
+  width: 76%; height: 76%; border: 1px solid hsl(280, 35%, 22%);
+  border-radius: 50%;
+}
+.hero-dot {
+  position: absolute; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--coral); z-index: 1;
+}
+.hero-dot:nth-child(1) { top: 18%; right: 22%; }
+.hero-dot:nth-child(2) { bottom: 28%; right: 35%; background: var(--electric); }
+
+/* ── Manifesto ── */
+.manifesto { background: var(--plum-mid); }
+.manifesto-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;
+  align-items: start;
+}
+.manifesto-text {
+  font-size: clamp(1.05rem, 2vw, 1.2rem); line-height: 1.8;
+  color: var(--sand-dark);
+}
+.manifesto-text p + p { margin-top: 1.4rem; }
+.manifesto-accent {
+  color: var(--coral); font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 700;
+  line-height: 1.2;
+}
+.manifesto-viz {
+  position: relative; min-height: 300px;
+}
+.manifesto-shape {
+  position: absolute; border-radius: 50%; opacity: 0.7;
+}
+.manifesto-shape:nth-child(1) {
+  width: 180px; height: 180px; background: hsla(6, 100%, 68%, 0.12);
+  top: 0; right: 2rem;
+}
+.manifesto-shape:nth-child(2) {
+  width: 120px; height: 120px; background: hsla(191, 100%, 55%, 0.1);
+  bottom: 2rem; left: 0;
+}
+.manifesto-shape:nth-child(3) {
+  width: 60px; height: 60px; background: hsla(40, 55%, 87%, 0.08);
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+}
+
+/* ── Program Constellation ── */
+.program { overflow: visible; }
+
+.program-filters {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem;
+}
+.filter-group { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.filter-group-label {
+  font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--sand-dimmer); margin-right: 0.3rem; font-family: var(--font-mono);
+}
+.filter-pill {
+  padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.78rem;
+  font-weight: 600; border: 1.5px solid var(--plum-light);
+  background: transparent; color: var(--sand-dark); cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s; font-family: var(--font-body); letter-spacing: 0.03em;
+}
+.filter-pill:hover { border-color: var(--electric); color: var(--sand); }
+.filter-pill.active {
+  background: var(--electric); color: var(--plum-deep); border-color: var(--electric);
+}
+
+.constellation-stage {
+  position: relative; width: 100%;
+  background: hsl(280, 45%, 11%); border-radius: 8px;
+  border: 1px solid hsl(280, 35%, 18%);
+  overflow: hidden; min-height: 500px;
+}
+.constellation-svg { display: block; width: 100%; height: auto; }
+
+/* Star & line styles */
+.constellation-line {
+  stroke: hsl(280, 35%, 25%); stroke-width: 1;
+  transition: stroke 0.25s, stroke-width 0.25s;
+}
+.constellation-line.highlight {
+  stroke: var(--electric); stroke-width: 1.8; opacity: 0.7;
+}
+.constellation-star {
+  cursor: pointer; transition: r 0.2s, fill 0.2s, stroke 0.2s;
+}
+.constellation-star:hover { r: 8; }
+.constellation-star.in-route {
+  stroke: var(--coral); stroke-width: 2.5;
+}
+.constellation-star.dimmed { opacity: 0.2; pointer-events: none; }
+.constellation-star .star-label {
+  font-family: var(--font-mono); font-size: 9px; fill: var(--sand-dark);
+  pointer-events: none; text-anchor: middle;
+}
+.constellation-star .star-time {
+  font-family: var(--font-mono); font-size: 7px; fill: var(--sand-dimmer);
+  pointer-events: none; text-anchor: middle;
+}
+
+/* ── Tooltip ── */
+.star-tooltip {
+  position: absolute; pointer-events: none; z-index: 50;
+  background: var(--plum-mid); border: 1px solid var(--plum-light);
+  padding: 0.75rem 1rem; border-radius: 4px; font-size: 0.85rem;
+  opacity: 0; transition: opacity 0.15s; max-width: 240px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  color: var(--sand);
+}
+.star-tooltip.visible { opacity: 1; }
+.star-tooltip-title {
+  font-weight: 700; color: var(--sand); margin-bottom: 0.2rem;
+}
+.star-tooltip-meta {
+  font-size: 0.7rem; color: var(--sand-dimmer);
+  font-family: var(--font-mono); letter-spacing: 0.05em;
+}
+
+/* ── Route Panel ── */
+.route-panel {
+  background: var(--plum-mid); border: 1px solid hsl(280, 35%, 20%);
+  border-radius: 8px; padding: 1.5rem; margin-top: 1.5rem;
+}
+.route-panel.is-empty { border-color: hsl(280, 30%, 15%); }
+.route-header {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;
+}
+.route-title {
+  font-family: var(--font-display); font-size: 1.2rem; font-weight: 700;
+  color: var(--sand);
+}
+.route-stats {
+  font-family: var(--font-mono); font-size: 0.8rem; color: var(--sand-dark);
+}
+.route-stats strong { color: var(--electric); font-size: 1.1rem; }
+.route-list { list-style: none; }
+.route-item {
+  display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0;
+  border-bottom: 1px solid hsl(280, 30%, 18%);
+}
+.route-item:last-child { border-bottom: none; }
+.route-item-time {
+  font-family: var(--font-mono); font-size: 0.75rem; color: var(--coral);
+  min-width: 3rem;
+}
+.route-item-name { flex: 1; font-size: 0.9rem; color: var(--sand); }
+.route-item-dir {
+  font-size: 0.7rem; color: var(--sand-dimmer);
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.btn-remove {
+  background: none; border: 1px solid var(--plum-light); color: var(--sand-dimmer);
+  width: 28px; height: 28px; border-radius: 50%; font-size: 0.8rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: color 0.15s, border-color 0.15s, background-color 0.15s;
+}
+.btn-remove:hover { border-color: var(--coral); color: var(--coral); }
+.route-empty-msg { color: var(--sand-dimmer); font-style: italic; font-size: 0.9rem; }
+.btn-clear-route {
+  background: none; border: 1px solid var(--plum-light);
+  color: var(--sand-dimmer); padding: 0.35rem 0.9rem; border-radius: 4px;
+  font-size: 0.75rem; cursor: pointer; transition: color 0.15s, border-color 0.15s, background-color 0.15s;
+  font-family: var(--font-body);
+}
+.btn-clear-route:hover { border-color: var(--coral); color: var(--coral); }
+
+/* ── Artists ── */
+.artists { background: var(--plum-deep); }
+.artists-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+.artist-card {
+  background: var(--plum-mid); border: 1px solid hsl(280, 30%, 18%);
+  border-radius: 6px; padding: 2rem 1.5rem; position: relative;
+  transition: border-color 0.2s;
+}
+.artist-card:hover { border-color: var(--electric); }
+.artist-avatar {
+  width: 64px; height: 64px; border-radius: 50%; margin-bottom: 1.2rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.artist-name {
+  font-family: var(--font-display); font-size: 1.3rem; font-weight: 700;
+  color: var(--sand); margin-bottom: 0.3rem;
+}
+.artist-role {
+  font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--electric); margin-bottom: 0.8rem; font-family: var(--font-mono);
+}
+.artist-bio {
+  font-size: 0.85rem; color: var(--sand-dark); line-height: 1.6;
+}
+.artist-tag {
+  display: inline-block; margin-top: 0.8rem; padding: 0.2rem 0.6rem;
+  font-size: 0.65rem; letter-spacing: 0.06em; text-transform: uppercase;
+  background: hsla(6, 100%, 68%, 0.12); color: var(--coral);
+  border-radius: 3px;
+}
+
+/* ── Tickets ── */
+.tickets { background: var(--plum-mid); }
+.tickets-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+.ticket-card {
+  background: var(--plum-deep); border: 1.5px solid hsl(280, 35%, 22%);
+  border-radius: 8px; padding: 2rem 1.5rem; text-align: center;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.ticket-card:hover { border-color: var(--electric); transform: translateY(-4px); }
+.ticket-card.featured { border-color: var(--coral); }
+.ticket-type {
+  font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--electric); margin-bottom: 0.8rem;
+}
+.ticket-card.featured .ticket-type { color: var(--coral); }
+.ticket-price {
+  font-family: var(--font-display); font-size: 2.5rem; font-weight: 900;
+  color: var(--sand); margin-bottom: 0.3rem;
+}
+.ticket-price small { font-size: 1rem; font-weight: 400; color: var(--sand-dark); }
+.ticket-desc {
+  font-size: 0.85rem; color: var(--sand-dark); line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+.ticket-perks { list-style: none; text-align: left; margin-bottom: 1.5rem; }
+.ticket-perks li {
+  font-size: 0.8rem; color: var(--sand-dark); padding: 0.3rem 0;
+  padding-left: 1.2rem; position: relative;
+}
+.ticket-perks li::before {
+  content: '+'; position: absolute; left: 0; color: var(--electric);
+  font-weight: 700;
+}
+.ticket-card.featured .ticket-perks li::before { color: var(--coral); }
+
+/* ── Footer ── */
+.site-footer {
+  background: hsl(282, 50%, 7%); border-top: 1px solid hsl(280, 35%, 14%);
+  padding: 3rem 0; text-align: center;
+}
+.footer-brand {
+  font-family: var(--font-display); font-size: 1.5rem; font-weight: 700;
+  color: var(--sand); margin-bottom: 0.5rem;
+}
+.footer-disclaimer {
+  font-size: 0.78rem; color: var(--sand-dimmer); font-style: italic;
+  margin-bottom: 0.4rem;
+}
+.footer-credits {
+  font-size: 0.7rem; color: hsl(280, 20%, 30%);
+  font-family: var(--font-mono); letter-spacing: 0.05em;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .section { padding: 3rem 0; }
+  .manifesto-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .manifesto-viz { min-height: 200px; }
+  .hero-ring { right: -6rem; width: 400px; height: 400px; }
+  .nav-list {
+    display: none; position: absolute; top: 100%; left: 0; right: 0;
+    flex-direction: column; background: hsla(282, 55%, 9%, 0.98);
+    backdrop-filter: blur(12px); padding: 1rem 1.5rem; gap: 0.75rem;
+    border-bottom: 1px solid hsl(280, 35%, 18%);
+  }
+  .nav-list.open { display: flex; }
+  .btn-burger { display: block; }
+  .header-inner { flex-wrap: wrap; }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 0 1rem; }
+  .hero { min-height: 70vh; }
+  .hero-title { font-size: clamp(2.5rem, 12vw, 4rem); }
+  .filter-group { width: 100%; }
+  .filter-pill { padding: 0.3rem 0.7rem; font-size: 0.72rem; }
+  .tickets-grid { grid-template-columns: 1fr; }
+  .artist-card { padding: 1.5rem 1rem; }
+  .route-panel { padding: 1rem; }
+}
+
+/* ── Animations (reduced-motion safe) ── */
+@keyframes subtle-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+.pulse { animation: subtle-pulse 2.5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
+
+/* ── Preloader ── */
+.preloader{position:fixed;inset:0;z-index:99999;background:var(--plum-deep);display:flex;align-items:center;justify-content:center;transition:opacity .8s ease,visibility .8s}
+.preloader.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.preloader-inner{display:flex;flex-direction:column;align-items:center;gap:20px}
+.preloader-ring{width:60px;height:60px;border-radius:50%;border:2px solid var(--plum-light);border-top-color:var(--coral);border-bottom-color:var(--electric);animation:preloader-spin 1s linear infinite}
+@keyframes preloader-spin{to{transform:rotate(360deg)}}
+.preloader-logo{font-family:var(--font-display);font-size:20px;letter-spacing:.3em;color:var(--sand);text-transform:uppercase}
+
+/* ── Artist Card Backgrounds ── */
+.artist-card{background-image:linear-gradient(to bottom,rgba(30,10,40,.7),rgba(30,10,40,.95)),url('');background-size:cover;background-position:center}
+.artist-card:nth-child(1){background-image:linear-gradient(to bottom,rgba(30,10,40,.8),rgba(30,10,40,.95)),url('https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&q=70')}
+.artist-card:nth-child(2){background-image:linear-gradient(to bottom,rgba(30,10,40,.8),rgba(30,10,40,.95)),url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&q=70')}
+.artist-card:nth-child(3){background-image:linear-gradient(to bottom,rgba(30,10,40,.8),rgba(30,10,40,.95)),url('https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&q=70')}
+.artist-card:nth-child(4){background-image:linear-gradient(to bottom,rgba(30,10,40,.8),rgba(30,10,40,.95)),url('https://images.unsplash.com/photo-1504680177321-2e6a879aac86?w=400&q=70')}
+.artist-card:nth-child(5){background-image:linear-gradient(to bottom,rgba(30,10,40,.8),rgba(30,10,40,.95)),url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&q=70')}
+.artist-card:nth-child(6){background-image:linear-gradient(to bottom,rgba(30,10,40,.8),rgba(30,10,40,.95)),url('https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=400&q=70')}
+
+/* ── Hero Background ── */
+.hero{background-image:radial-gradient(ellipse at 70% 50%,rgba(108,92,231,.08) 0%,transparent 50%),url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&q=60');background-size:cover;background-position:center;background-blend-mode:overlay}
+.hero::before{content:'';position:absolute;inset:0;background:rgba(28,10,36,.75);z-index:0}
+</style>
+</head>
+<body>
+
+<div class="preloader" id="preloader">
+  <div class="preloader-inner">
+    <div class="preloader-ring"></div>
+    <span class="preloader-logo">AFTERLIGHT</span>
+  </div>
+</div>
+
+<!-- Skip Link -->
+<a href="#main-content" class="skip-link">К содержанию</a>
+
+<!-- Cursor Aura (JS-managed) -->
+<div class="cursor-aura" aria-hidden="true"></div>
+
+<!-- Header -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="#" class="logo" aria-label="На главную">AFTER<span>LIGHT</span></a>
+    <button class="btn-burger" aria-expanded="false" aria-controls="main-nav" aria-label="Меню">☰</button>
+    <nav id="main-nav" aria-label="Основная навигация">
+      <ul class="nav-list">
+        <li><a href="#hero">Главная</a></li>
+        <li><a href="#manifesto">Манифест</a></li>
+        <li><a href="#program">Программа</a></li>
+        <li><a href="#artists">Художники</a></li>
+        <li><a href="#tickets">Билеты</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main id="main-content">
+
+<!-- ── HERO ── -->
+<section class="hero" id="hero" aria-labelledby="hero-heading">
+  <div class="hero-ring" aria-hidden="true">
+    <div class="hero-dot" style="top:18%;right:22%"></div>
+    <div class="hero-dot pulse" style="bottom:28%;right:35%"></div>
+  </div>
+  <div class="container">
+    <h1 id="hero-heading" class="hero-title">
+      <span class="line1">AFTER</span>
+      <span class="line2">LIGHT</span>
+    </h1>
+    <p class="hero-subtitle">Фестиваль цифрового искусства</p>
+    <p class="hero-date">12 – 14 сентября 2026 &nbsp;·&nbsp; Санкт-Петербург</p>
+    <div class="hero-cta">
+      <a href="#program" class="btn btn-primary">Исследовать программу</a>
+      <a href="#tickets" class="btn btn-outline">Билеты</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── MANIFESTO ── -->
+<section class="manifesto section" id="manifesto" aria-labelledby="manifesto-heading">
+  <div class="container">
+    <span class="section-label">Манифест</span>
+    <h2 class="section-title" id="manifesto-heading">Искусство <em>после</em> света</h2>
+    <div class="manifesto-grid">
+      <div class="manifesto-text">
+        <p>AFTERLIGHT&nbsp;— не просто фестиваль. Это исследование территории, где цифровое перестаёт быть инструментом и становится <strong>средой обитания смысла</strong>. Мы собираем художников, которые работают на границе кода, звука, изображения и пространства.</p>
+        <p>Здесь алгоритм&nbsp;— соавтор, экран&nbsp;— холст, а зритель&nbsp;— участник. Мы отказываемся от пассивного наблюдения: каждое событие фестиваля&nbsp;— приглашение к сотворчеству.</p>
+        <p>Три дня. Четыре направления. Одно созвездие.</p>
+      </div>
+      <div class="manifesto-viz" aria-hidden="true">
+        <div class="manifesto-shape"></div>
+        <div class="manifesto-shape"></div>
+        <div class="manifesto-shape pulse"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROGRAM CONSTELLATION ── -->
+<section class="program section" id="program" aria-labelledby="program-heading">
+  <div class="container">
+    <span class="section-label">Программа</span>
+    <h2 class="section-title" id="program-heading">Созвездие <em>событий</em></h2>
+    <p style="color:var(--sand-dark);margin-bottom:1.5rem;max-width:600px;">
+      Каждая точка&nbsp;— событие. Нажмите, чтобы добавить в персональный маршрут. Фильтруйте по дню и направлению.
+    </p>
+
+    <!-- Filters -->
+    <div class="program-filters" role="group" aria-label="Фильтры программы">
+      <div class="filter-group" role="group" aria-label="День">
+        <span class="filter-group-label">День</span>
+        <button class="filter-pill active" data-filter-day="all">Все дни</button>
+        <button class="filter-pill" data-filter-day="1">День 1</button>
+        <button class="filter-pill" data-filter-day="2">День 2</button>
+        <button class="filter-pill" data-filter-day="3">День 3</button>
+      </div>
+      <div class="filter-group" role="group" aria-label="Направление">
+        <span class="filter-group-label">Направление</span>
+        <button class="filter-pill active" data-filter-dir="all">Все</button>
+        <button class="filter-pill" data-filter-dir="digital">Цифровое искусство</button>
+        <button class="filter-pill" data-filter-dir="audiovisual">Аудиовизуальное</button>
+        <button class="filter-pill" data-filter-dir="installation">Инсталляция</button>
+        <button class="filter-pill" data-filter-dir="performance">Перформанс</button>
+      </div>
+    </div>
+
+    <!-- Constellation SVG -->
+    <div class="constellation-stage" id="constellation-stage" aria-label="Интерактивная карта событий фестиваля. Каждая точка — событие. Используйте клавиши Tab и Enter для навигации.">
+      <svg class="constellation-svg" viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg" id="constellation-svg">
+        <!-- Background micro-stars -->
+        <g id="bg-stars" fill="hsl(278, 30%, 30%)" opacity="0.5"></g>
+
+        <!-- Constellation figure lines (decorative dashed polygons per day) -->
+        <g id="figures" stroke="hsl(280, 30%, 22%)" stroke-width="0.8" stroke-dasharray="6 4" fill="none" opacity="0.6"></g>
+
+        <!-- Connection lines between related events (same direction) -->
+        <g id="connections" stroke="hsl(280, 35%, 25%)" stroke-width="1" fill="none" opacity="0.7"></g>
+
+        <!-- Stars (events) -->
+        <g id="stars-group"></g>
+
+        <!-- Labels (rendered per star) -->
+        <g id="labels-group"></g>
+      </svg>
+    </div>
+
+    <!-- Tooltip (positioned by JS) -->
+    <div class="star-tooltip" id="star-tooltip" role="tooltip" aria-hidden="true"></div>
+
+    <!-- Route Panel -->
+    <div class="route-panel is-empty" id="route-panel" aria-live="polite" aria-label="Ваш персональный маршрут">
+      <div class="route-header">
+        <h3 class="route-title">Ваш маршрут</h3>
+        <span class="route-stats" id="route-stats">
+          Событий: <strong>0</strong>
+        </span>
+        <button class="btn-clear-route" id="btn-clear-route" aria-label="Очистить маршрут">Очистить</button>
+      </div>
+      <ul class="route-list" id="route-list">
+        <li class="route-empty-msg">Выберите события на созвездии, чтобы построить маршрут.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── ARTISTS ── -->
+<section class="artists section" id="artists" aria-labelledby="artists-heading">
+  <div class="container">
+    <span class="section-label">Художники</span>
+    <h2 class="section-title" id="artists-heading">Авторы <em>созвездия</em></h2>
+    <div class="artists-grid">
+
+      <div class="artist-card">
+        <svg class="artist-avatar" viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="28" fill="hsl(280,35%,18%)" stroke="hsl(6,100%,68%)" stroke-width="2"/>
+          <circle cx="26" cy="26" r="5" fill="var(--coral)"/>
+          <circle cx="38" cy="26" r="4" fill="var(--coral)"/>
+          <path d="M22 40 Q32 50 42 40" stroke="var(--coral)" stroke-width="2" fill="none"/>
+        </svg>
+        <p class="artist-name">Алиса Ветрова</p>
+        <p class="artist-role">Цифровое искусство</p>
+        <p class="artist-bio">Генеративная графика и нейросетевые ландшафты. Исследует границу между алгоритмической случайностью и авторским замыслом.</p>
+        <span class="artist-tag">День 1, 3</span>
+      </div>
+
+      <div class="artist-card">
+        <svg class="artist-avatar" viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="28" fill="hsl(280,35%,18%)" stroke="hsl(191,100%,55%)" stroke-width="2"/>
+          <rect x="20" y="18" width="24" height="10" rx="3" fill="var(--electric)"/>
+          <rect x="22" y="32" width="20" height="5" rx="2" fill="var(--electric)" opacity="0.6"/>
+          <rect x="24" y="40" width="16" height="4" rx="2" fill="var(--electric)" opacity="0.4"/>
+        </svg>
+        <p class="artist-name">Максим Код</p>
+        <p class="artist-role">Аудиовизуальное</p>
+        <p class="artist-bio">Живой звук, синтезированный из данных реального времени. Превращает городские потоки в симфонии.</p>
+        <span class="artist-tag">День 1, 2</span>
+      </div>
+
+      <div class="artist-card">
+        <svg class="artist-avatar" viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="28" fill="hsl(280,35%,18%)" stroke="hsl(40,55%,87%)" stroke-width="2"/>
+          <polygon points="32,14 40,36 62,36 44,50 50,72 32,58 14,72 20,50 2,36 24,36" fill="var(--sand)" opacity="0.4"/>
+        </svg>
+        <p class="artist-name">Елена Сфера</p>
+        <p class="artist-role">Инсталляция</p>
+        <p class="artist-bio">Кинетические световые скульптуры, реагирующие на присутствие зрителя. Пространство как соавтор.</p>
+        <span class="artist-tag">День 1, 2</span>
+      </div>
+
+      <div class="artist-card">
+        <svg class="artist-avatar" viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="28" fill="hsl(280,35%,18%)" stroke="hsl(6,100%,68%)" stroke-width="2"/>
+          <path d="M16 48 Q32 16 48 48" stroke="var(--coral)" stroke-width="3" fill="none"/>
+          <circle cx="32" cy="32" r="5" fill="hsl(191,100%,55%)"/>
+        </svg>
+        <p class="artist-name">Даниил Поток</p>
+        <p class="artist-role">Перформанс</p>
+        <p class="artist-bio">Тело в цифровом пространстве. Иммерсивные перформансы с захватом движения и проекционным маппингом.</p>
+        <span class="artist-tag">День 2</span>
+      </div>
+
+      <div class="artist-card">
+        <svg class="artist-avatar" viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="28" fill="hsl(280,35%,18%)" stroke="hsl(191,100%,55%)" stroke-width="2"/>
+          <rect x="14" y="20" width="16" height="24" rx="2" fill="var(--electric)" opacity="0.3"/>
+          <rect x="22" y="26" width="16" height="18" rx="2" fill="var(--electric)" opacity="0.5"/>
+          <rect x="30" y="32" width="14" height="12" rx="2" fill="var(--electric)" opacity="0.7"/>
+        </svg>
+        <p class="artist-name">София Грань</p>
+        <p class="artist-role">Цифровое искусство</p>
+        <p class="artist-bio">Мастерская интерактивного кода. Создаёт инструменты, с которыми зритель становится художником.</p>
+        <span class="artist-tag">День 2</span>
+      </div>
+
+      <div class="artist-card">
+        <svg class="artist-avatar" viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="28" fill="hsl(280,35%,18%)" stroke="hsl(40,55%,87%)" stroke-width="2"/>
+          <circle cx="26" cy="28" r="12" fill="none" stroke="var(--sand)" stroke-width="1.5" opacity="0.5"/>
+          <circle cx="38" cy="36" r="9" fill="none" stroke="var(--coral)" stroke-width="1.5" opacity="0.5"/>
+          <circle cx="32" cy="32" r="4" fill="var(--sand)" opacity="0.7"/>
+        </svg>
+        <p class="artist-name">Артём Волна</p>
+        <p class="artist-role">Инсталляция / Звук</p>
+        <p class="artist-bio">Финальная мультимедийная инсталляция. Свет, звук и данные сливаются в единый организм.</p>
+        <span class="artist-tag">День 3</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── TICKETS ── -->
+<section class="tickets section" id="tickets" aria-labelledby="tickets-heading">
+  <div class="container">
+    <span class="section-label">Билеты</span>
+    <h2 class="section-title" id="tickets-heading">Выберите <em>свой вход</em></h2>
+    <div class="tickets-grid">
+
+      <div class="ticket-card">
+        <p class="ticket-type">Один день</p>
+        <p class="ticket-price">2 500 <small>₽</small></p>
+        <p class="ticket-desc">Доступ ко всем событиям выбранного дня.</p>
+        <ul class="ticket-perks">
+          <li>Все события дня</li>
+          <li>Персональный маршрут</li>
+        </ul>
+        <button class="btn btn-outline" style="width:100%">Выбрать</button>
+      </div>
+
+      <div class="ticket-card featured">
+        <p class="ticket-type">Все три дня</p>
+        <p class="ticket-price">5 500 <small>₽</small></p>
+        <p class="ticket-desc">Полное погружение. Рекомендуемый вариант.</p>
+        <ul class="ticket-perks">
+          <li>Все события всех дней</li>
+          <li>Персональный маршрут</li>
+          <li>Закрытая вечеринка</li>
+        </ul>
+        <button class="btn btn-primary" style="width:100%">Выбрать</button>
+      </div>
+
+      <div class="ticket-card">
+        <p class="ticket-type">Арт-патрон</p>
+        <p class="ticket-price">12 000 <small>₽</small></p>
+        <p class="ticket-desc">Поддержка фестиваля и особые условия.</p>
+        <ul class="ticket-perks">
+          <li>Всё из «Все три дня»</li>
+          <li>Встреча с художниками</li>
+          <li>Лимитированный арт-объект</li>
+        </ul>
+        <button class="btn btn-outline" style="width:100%">Выбрать</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <a href="../../index.html" style="display:inline-block;margin-bottom:16px;font-family:var(--font-mono);font-size:0.75rem;letter-spacing:.1em;color:var(--electric);text-transform:uppercase;border:1px solid var(--electric);padding:8px 20px;border-radius:4px;transition:background .3s,color .3s" onmouseover="this.style.background='var(--electric)';this.style.color='var(--plum-deep)'" onmouseout="this.style.background='transparent';this.style.color='var(--electric)'">← Все проекты</a>
+    <p class="footer-brand">AFTERLIGHT</p>
+    <p class="footer-disclaimer">Концептуальный проект для портфолио</p>
+    <p class="footer-credits">Все события, художники и детали вымышлены. Дизайн и разработка — часть портфолио.</p>
+  </div>
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+'use strict';
+
+window.addEventListener('load',function(){setTimeout(function(){var p=document.getElementById('preloader');if(p)p.classList.add('hidden');},2200);});
+
+// ── Data: Festival Events ──
+const EVENTS = [
+  { id:'e1',  day:1, direction:'performance',  time:'18:00', title:'Церемония открытия',        desc:'Перформанс-пролог, задающий тон всему фестивалю.', x:120, y:180 },
+  { id:'e2',  day:1, direction:'digital',       time:'19:30', title:'Цифровые миры',             desc:'Генеративная графика и нейросетевые ландшафты от Алисы Ветровой.', x:260, y:100 },
+  { id:'e3',  day:1, direction:'audiovisual',   time:'21:00', title:'Звуковые ландшафты',        desc:'Аудиовизуальный перформанс: данные города как музыка.', x:180, y:310 },
+  { id:'e4',  day:1, direction:'installation',  time:'22:30', title:'Световая инсталляция',      desc:'Кинетический свет, реагирующий на движение зрителей.', x:320, y:240 },
+  { id:'e5',  day:2, direction:'digital',       time:'14:00', title:'Мастерская кода',           desc:'Интерактивный воркшоп: зритель пишет код, рождающий искусство.', x:440, y:150 },
+  { id:'e6',  day:2, direction:'performance',   time:'16:30', title:'Тела в цифре',              desc:'Иммерсивный перформанс с захватом движения.', x:540, y:270 },
+  { id:'e7',  day:2, direction:'audiovisual',   time:'19:00', title:'Аудиовизуальная симфония',  desc:'Живой звук и проекции сливаются в единый поток.', x:470, y:390 },
+  { id:'e8',  day:2, direction:'installation',  time:'21:30', title:'Кинетические скульптуры',   desc:'Механика и свет: скульптуры, дышащие в такт музыке.', x:590, y:210 },
+  { id:'e9',  day:3, direction:'digital',       time:'15:00', title:'Генеративная графика',      desc:'Алгоритмические миры, рождающиеся в реальном времени.', x:710, y:170 },
+  { id:'e10', day:3, direction:'audiovisual',   time:'17:30', title:'Живой звук',                desc:'Синтез и импровизация: звук как цифровой организм.', x:830, y:290 },
+  { id:'e11', day:3, direction:'performance',   time:'20:00', title:'Иммерсивный театр',         desc:'Зритель внутри цифрового спектакля без сцены и границ.', x:740, y:400 },
+  { id:'e12', day:3, direction:'installation',  time:'22:00', title:'Финальная инсталляция',     desc:'Масштабная мультимедийная работа, объединяющая всё.', x:860, y:440 },
+  { id:'e13', day:3, direction:'performance',   time:'23:00', title:'Церемония закрытия',        desc:'Коллективный перформанс-эпилог. Фестиваль не заканчивается.', x:780, y:540 }
+];
+
+// Direction color map
+const DIR_COLORS = {
+  digital:      'hsl(191, 100%, 55%)',   // electric blue
+  audiovisual:  'hsl(40, 55%, 80%)',     // sand
+  installation: 'hsl(280, 45%, 55%)',    // light plum
+  performance:  'hsl(6, 100%, 68%)'      // coral
+};
+
+const DIR_LABELS = {
+  digital: 'Цифровое искусство',
+  audiovisual: 'Аудиовизуальное',
+  installation: 'Инсталляция',
+  performance: 'Перформанс'
+};
+
+// ── State ──
+let activeDay = 'all';
+let activeDir = 'all';
+let route = [];            // array of event ids
+const MAX_ROUTE = 8;
+
+// ── DOM refs ──
+const svgEl = document.getElementById('constellation-svg');
+const starsGroup = document.getElementById('stars-group');
+const labelsGroup = document.getElementById('labels-group');
+const bgStarsGroup = document.getElementById('bg-stars');
+const figuresGroup = document.getElementById('figures');
+const connectionsGroup = document.getElementById('connections');
+const tooltipEl = document.getElementById('star-tooltip');
+const routeList = document.getElementById('route-list');
+const routeStats = document.getElementById('route-stats');
+const routePanel = document.getElementById('route-panel');
+const btnClearRoute = document.getElementById('btn-clear-route');
+const stageEl = document.getElementById('constellation-stage');
+
+// ── Draw background micro-stars ──
+function drawBgStars() {
+  let html = '';
+  for (let i = 0; i < 55; i++) {
+    const cx = Math.random() * 1000;
+    const cy = Math.random() * 700;
+    const r = Math.random() * 1.2 + 0.4;
+    html += `<circle cx="${cx}" cy="${cy}" r="${r}"/>`;
+  }
+  bgStarsGroup.innerHTML = html;
+}
+drawBgStars();
+
+// ── Draw constellation figures (dashed polygons around day clusters) ──
+const DAY_FIGURES = {
+  1: [[80,70],[380,40],[400,370],[90,360]],
+  2: [[390,90],[650,80],[680,440],[400,480]],
+  3: [[660,110],[940,220],[930,600],[650,590]]
+};
+let figuresHtml = '';
+for (const [day, pts] of Object.entries(DAY_FIGURES)) {
+  figuresHtml += `<polygon points="${pts.map(p=>p.join(',')).join(' ')}" data-figure-day="${day}"/>`;
+}
+figuresGroup.innerHTML = figuresHtml;
+
+// ── Draw connection lines (same direction across days) ──
+function drawConnections() {
+  const directions = ['digital','audiovisual','installation','performance'];
+  let html = '';
+  for (const dir of directions) {
+    const dirEvents = EVENTS.filter(e => e.direction === dir).sort((a,b) => a.day - b.day);
+    for (let i = 0; i < dirEvents.length - 1; i++) {
+      html += `<line x1="${dirEvents[i].x}" y1="${dirEvents[i].y}" x2="${dirEvents[i+1].x}" y2="${dirEvents[i+1].y}" class="constellation-line" data-dir="${dir}" data-conn="${dirEvents[i].id}-${dirEvents[i+1].id}"/>`;
+    }
+  }
+  connectionsGroup.innerHTML = html;
+}
+drawConnections();
+
+// ── Draw stars ──
+function drawStars() {
+  let starsHtml = '';
+  let labelsHtml = '';
+  for (const ev of EVENTS) {
+    const fill = DIR_COLORS[ev.direction];
+    const inRoute = route.includes(ev.id);
+    starsHtml += `<circle
+      cx="${ev.x}" cy="${ev.y}" r="${inRoute ? 7.5 : 5.5}"
+      fill="${fill}" stroke="${inRoute ? 'var(--coral)' : 'transparent'}"
+      stroke-width="${inRoute ? 2.5 : 0}"
+      class="constellation-star${inRoute ? ' in-route' : ''}"
+      data-id="${ev.id}" data-day="${ev.day}" data-dir="${ev.direction}"
+      data-time="${ev.time}" data-title="${ev.title.replace(/"/g,'&quot;')}"
+      data-desc="${ev.desc.replace(/"/g,'&quot;')}"
+      tabindex="0" role="button"
+      aria-label="${ev.title}, ${ev.time}, ${DIR_LABELS[ev.direction]}, День ${ev.day}. ${inRoute ? 'Уже в маршруте.' : 'Нажмите чтобы добавить в маршрут.'}"
+    />`;
+    labelsHtml += `<text x="${ev.x}" y="${ev.y - 12}" class="star-label" data-for="${ev.id}">${ev.title.length > 10 ? ev.title.slice(0,10)+'…' : ev.title}</text>`;
+    labelsHtml += `<text x="${ev.x}" y="${ev.y + 18}" class="star-time" data-for="${ev.id}">${ev.time}</text>`;
+  }
+  starsGroup.innerHTML = starsHtml;
+  labelsGroup.innerHTML = labelsHtml;
+}
+drawStars();
+
+// ── Apply filters ──
+function applyFilters() {
+  const stars = starsGroup.querySelectorAll('.constellation-star');
+  const labels = labelsGroup.querySelectorAll('text');
+  const connections = connectionsGroup.querySelectorAll('.constellation-line');
+  const figures = figuresGroup.querySelectorAll('polygon');
+
+  for (const star of stars) {
+    const d = star.dataset.day;
+    const dir = star.dataset.dir;
+    const dayMatch = activeDay === 'all' || d === activeDay;
+    const dirMatch = activeDir === 'all' || dir === activeDir;
+    if (dayMatch && dirMatch) {
+      star.classList.remove('dimmed');
+      star.setAttribute('tabindex', '0');
+    } else {
+      star.classList.add('dimmed');
+      star.setAttribute('tabindex', '-1');
+    }
+  }
+
+  for (const label of labels) {
+    const forId = label.dataset.for;
+    const ev = EVENTS.find(e => e.id === forId);
+    if (!ev) continue;
+    const dayMatch = activeDay === 'all' || String(ev.day) === activeDay;
+    const dirMatch = activeDir === 'all' || ev.direction === activeDir;
+    label.style.opacity = (dayMatch && dirMatch) ? '1' : '0.15';
+  }
+
+  for (const conn of connections) {
+    const dir = conn.dataset.dir;
+    const dirMatch = activeDir === 'all' || dir === activeDir;
+    conn.style.opacity = dirMatch ? '0.7' : '0.1';
+  }
+
+  for (const fig of figures) {
+    const fd = fig.dataset.figureDay;
+    const dayMatch = activeDay === 'all' || fd === activeDay;
+    fig.style.opacity = dayMatch ? '0.6' : '0.1';
+  }
+
+  hideTooltip();
+}
+
+// ── Filter button handlers ──
+document.querySelectorAll('.filter-pill[data-filter-day]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-pill[data-filter-day]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeDay = btn.dataset.filterDay;
+    applyFilters();
+  });
+});
+
+document.querySelectorAll('.filter-pill[data-filter-dir]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-pill[data-filter-dir]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeDir = btn.dataset.filterDir;
+    applyFilters();
+  });
+});
+
+// ── Tooltip ──
+function showTooltip(ev, starEl) {
+  const rect = stageEl.getBoundingClientRect();
+  const svgRect = svgEl.getBoundingClientRect();
+  const scaleX = svgRect.width / 1000;
+  const scaleY = svgRect.height / 700;
+  const cx = parseFloat(starEl.getAttribute('cx'));
+  const cy = parseFloat(starEl.getAttribute('cy'));
+  const left = svgRect.left - rect.left + cx * scaleX;
+  const top = svgRect.top - rect.top + cy * scaleY;
+
+  tooltipEl.innerHTML = `
+    <div class="star-tooltip-title">${starEl.dataset.title}</div>
+    <div class="star-tooltip-meta">${starEl.dataset.time} · ${DIR_LABELS[starEl.dataset.dir]} · День ${starEl.dataset.day}</div>
+    <div style="font-size:0.78rem;color:var(--sand-dark);margin-top:0.3rem;">${starEl.dataset.desc}</div>
+  `;
+  const ttWidth = tooltipEl.offsetWidth;
+  const ttHeight = tooltipEl.offsetHeight;
+  const stageWidth = stageEl.offsetWidth;
+  const stageHeight = stageEl.offsetHeight;
+
+  let posLeft = left + 20;
+  let posTop = top - ttHeight - 15;
+  if (posLeft + ttWidth > stageWidth - 10) posLeft = left - ttWidth - 20;
+  if (posLeft < 10) posLeft = 10;
+  if (posTop < 10) posTop = top + 20;
+
+  tooltipEl.style.left = posLeft + 'px';
+  tooltipEl.style.top = posTop + 'px';
+  tooltipEl.classList.add('visible');
+  tooltipEl.setAttribute('aria-hidden', 'false');
+}
+
+function hideTooltip() {
+  tooltipEl.classList.remove('visible');
+  tooltipEl.setAttribute('aria-hidden', 'true');
+}
+
+// ── Route management ──
+function updateRouteUI() {
+  // Update stats
+  routeStats.innerHTML = `Событий: <strong>${route.length}</strong>`;
+
+  // Update route list
+  if (route.length === 0) {
+    routeList.innerHTML = '<li class="route-empty-msg">Выберите события на созвездии, чтобы построить маршрут.</li>';
+    routePanel.classList.add('is-empty');
+  } else {
+    routePanel.classList.remove('is-empty');
+    const sorted = route.map(id => EVENTS.find(e => e.id === id)).filter(Boolean)
+      .sort((a,b) => a.day - b.day || a.time.localeCompare(b.time));
+    routeList.innerHTML = sorted.map(ev => `
+      <li class="route-item">
+        <span class="route-item-time">${ev.time}</span>
+        <span class="route-item-name">${ev.title}</span>
+        <span class="route-item-dir">${DIR_LABELS[ev.direction]}</span>
+        <button class="btn-remove" data-remove="${ev.id}" aria-label="Удалить ${ev.title} из маршрута">×</button>
+      </li>
+    `).join('');
+  }
+
+  // Update star visuals
+  redrawStars();
+}
+
+function addToRoute(eventId) {
+  if (route.includes(eventId)) return false;
+  if (route.length >= MAX_ROUTE) {
+    // Briefly flash route panel to indicate limit
+    routePanel.style.boxShadow = '0 0 0 2px var(--coral)';
+    setTimeout(() => { routePanel.style.boxShadow = ''; }, 500);
+    return false;
+  }
+  route.push(eventId);
+  updateRouteUI();
+  return true;
+}
+
+function removeFromRoute(eventId) {
+  route = route.filter(id => id !== eventId);
+  updateRouteUI();
+}
+
+function redrawStars() {
+  const stars = starsGroup.querySelectorAll('.constellation-star');
+  for (const star of stars) {
+    const inRoute = route.includes(star.dataset.id);
+    star.setAttribute('r', inRoute ? '7.5' : '5.5');
+    star.setAttribute('stroke', inRoute ? 'var(--coral)' : 'transparent');
+    star.setAttribute('stroke-width', inRoute ? '2.5' : '0');
+    if (inRoute) star.classList.add('in-route');
+    else star.classList.remove('in-route');
+    // Update aria-label
+    const ev = EVENTS.find(e => e.id === star.dataset.id);
+    if (ev) {
+      star.setAttribute('aria-label',
+        `${ev.title}, ${ev.time}, ${DIR_LABELS[ev.direction]}, День ${ev.day}. ${inRoute ? 'Уже в маршруте.' : 'Нажмите чтобы добавить в маршрут.'}`
+      );
+    }
+  }
+}
+
+// ── Star interaction (click) ──
+starsGroup.addEventListener('click', (e) => {
+  const star = e.target.closest('.constellation-star');
+  if (!star || star.classList.contains('dimmed')) return;
+  const id = star.dataset.id;
+  if (route.includes(id)) {
+    removeFromRoute(id);
+  } else {
+    addToRoute(id);
+  }
+});
+
+// Star keyboard interaction
+starsGroup.addEventListener('keydown', (e) => {
+  const star = e.target.closest('.constellation-star');
+  if (!star) return;
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    const id = star.dataset.id;
+    if (route.includes(id)) {
+      removeFromRoute(id);
+    } else {
+      addToRoute(id);
+    }
+  }
+});
+
+// Star hover (tooltip + highlight connections)
+starsGroup.addEventListener('mouseover', (e) => {
+  const star = e.target.closest('.constellation-star');
+  if (!star || star.classList.contains('dimmed')) return;
+  showTooltip(e, star);
+  // Highlight related connections
+  const id = star.dataset.id;
+  const dir = star.dataset.dir;
+  connectionsGroup.querySelectorAll('.constellation-line').forEach(line => {
+    if (line.dataset.dir === dir) line.classList.add('highlight');
+  });
+});
+
+starsGroup.addEventListener('mouseout', (e) => {
+  const star = e.target.closest('.constellation-star');
+  if (!star) return;
+  hideTooltip();
+  connectionsGroup.querySelectorAll('.constellation-line').forEach(line => {
+    line.classList.remove('highlight');
+  });
+});
+
+// Star focus (tooltip)
+starsGroup.addEventListener('focusin', (e) => {
+  const star = e.target.closest('.constellation-star');
+  if (!star || star.classList.contains('dimmed')) return;
+  showTooltip(e, star);
+  const dir = star.dataset.dir;
+  connectionsGroup.querySelectorAll('.constellation-line').forEach(line => {
+    if (line.dataset.dir === dir) line.classList.add('highlight');
+  });
+});
+
+starsGroup.addEventListener('focusout', (e) => {
+  hideTooltip();
+  connectionsGroup.querySelectorAll('.constellation-line').forEach(line => {
+    line.classList.remove('highlight');
+  });
+});
+
+// ── Route panel: remove buttons ──
+routeList.addEventListener('click', (e) => {
+  const btn = e.target.closest('.btn-remove');
+  if (!btn) return;
+  removeFromRoute(btn.dataset.remove);
+});
+
+// ── Clear route ──
+btnClearRoute.addEventListener('click', () => {
+  route = [];
+  updateRouteUI();
+});
+
+// ── Cursor Aura ──
+const aura = document.querySelector('.cursor-aura');
+let auraTimeout;
+document.addEventListener('mousemove', (e) => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  aura.style.setProperty('--mx', e.clientX + 'px');
+  aura.style.setProperty('--my', e.clientY + 'px');
+  aura.style.opacity = '1';
+  clearTimeout(auraTimeout);
+  auraTimeout = setTimeout(() => { aura.style.opacity = '0'; }, 1500);
+});
+
+// Hide aura when mouse leaves window
+document.addEventListener('mouseleave', () => { aura.style.opacity = '0'; });
+
+// ── Mobile nav toggle ──
+const btnBurger = document.querySelector('.btn-burger');
+const navList = document.querySelector('.nav-list');
+btnBurger.addEventListener('click', () => {
+  const open = navList.classList.toggle('open');
+  btnBurger.setAttribute('aria-expanded', open);
+  btnBurger.textContent = open ? '✕' : '☰';
+});
+
+// Close nav on link click (mobile)
+navList.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    navList.classList.remove('open');
+    btnBurger.setAttribute('aria-expanded', 'false');
+    btnBurger.textContent = '☰';
+  });
+});
+
+// ── Ticket buttons (non-functional placeholder) ──
+document.querySelectorAll('.ticket-card .btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    alert('Это концептуальный проект для портфолио. Покупка билетов не предусмотрена.');
+  });
+});
+
+// ── Initial state ──
+applyFilters();
+updateRouteUI();
+
+</script>
+
+</body>
+</html>

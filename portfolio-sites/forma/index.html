@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FORMA — Модульная мебель</title>
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --milk:        #F5F0EB;
+  --milk-warm:   #EDE6DD;
+  --graphite:    #2D2D2D;
+  --graphite-60: rgba(45,45,45,0.6);
+  --graphite-30: rgba(45,45,45,0.3);
+  --graphite-10: rgba(45,45,45,0.1);
+  --cobalt:      #1A3A5C;
+  --cobalt-80:   rgba(26,58,92,0.8);
+  --cobalt-50:   rgba(26,58,92,0.5);
+  --cobalt-15:   rgba(26,58,92,0.15);
+  --cobalt-08:   rgba(26,58,92,0.08);
+  --orange:      #FF4D00;
+  --orange-hov:  #E04400;
+  --orange-15:   rgba(255,77,0,0.15);
+  --white:       #FFFFFF;
+
+  --font-sans:   'Inter', 'Helvetica Neue', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono:   'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+
+  --grid-gap:    clamp(16px, 3vw, 40px);
+  --section-py:  clamp(60px, 10vw, 120px);
+  --radius:      6px;
+  --line:        1px solid var(--graphite-30);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-sans);
+  color:var(--graphite);
+  background:var(--milk);
+  line-height:1.6;
+  overflow-x:hidden;
+}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+ul{list-style:none}
+:focus-visible{outline:2px solid var(--orange);outline-offset:3px;border-radius:2px}
+
+/* ============================================================
+   SKIP LINK
+   ============================================================ */
+.skip-link{
+  position:absolute;top:0;left:0;
+  background:var(--cobalt);color:var(--white);
+  padding:12px 24px;z-index:1000;
+  transform:translateY(-100%);transition:transform .2s;
+  font-family:var(--font-mono);font-size:14px;
+}
+.skip-link:focus{transform:translateY(0)}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.site-header{
+  position:sticky;top:0;z-index:100;
+  background:var(--milk);
+  border-bottom:var(--line);
+  padding:0 var(--grid-gap);
+}
+.header-inner{
+  max-width:1360px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  height:clamp(48px,8vh,64px);
+}
+.logo{
+  font-family:var(--font-mono);
+  font-size:clamp(18px,2.5vw,24px);
+  font-weight:700;letter-spacing:.15em;
+  color:var(--cobalt);
+  text-transform:uppercase;
+}
+.main-nav{display:flex;gap:clamp(12px,2.5vw,32px)}
+.main-nav a{
+  font-family:var(--font-mono);font-size:13px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--graphite-60);
+  padding:4px 0;border-bottom:2px solid transparent;
+  transition:color .2s,border-color .2s;
+}
+.main-nav a:hover,.main-nav a:focus-visible{color:var(--graphite);border-color:var(--orange)}
+.cart-btn{
+  position:relative;
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:13px;letter-spacing:.05em;
+  color:var(--graphite);padding:6px 14px;
+  border:1px solid var(--graphite-30);border-radius:var(--radius);
+  transition:border-color .2s,background .2s;
+}
+.cart-btn:hover,.cart-btn:focus-visible{border-color:var(--orange);background:var(--orange-15)}
+.cart-icon{font-size:18px;line-height:1}
+.cart-count{
+  background:var(--orange);color:var(--white);
+  font-size:11px;min-width:20px;height:20px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.cart-count.bump{transform:scale(1.4)}
+
+/* ============================================================
+   SECTION COMMONS
+   ============================================================ */
+.section{
+  padding:var(--section-py) var(--grid-gap);
+  position:relative;
+}
+.section-inner{max-width:1360px;margin:0 auto}
+.section-label{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--graphite-60);
+  margin-bottom:clamp(16px,3vw,32px);
+  display:flex;align-items:center;gap:12px;
+}
+.section-label::after{
+  content:'';flex:1;height:1px;background:var(--graphite-30);
+}
+.section-title{
+  font-size:clamp(28px,5vw,56px);
+  font-weight:700;letter-spacing:-.02em;
+  line-height:1.1;color:var(--cobalt);
+  margin-bottom:clamp(12px,2vw,24px);
+}
+.section-subtitle{
+  font-size:clamp(15px,2vw,18px);
+  color:var(--graphite-60);max-width:600px;
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{
+  min-height:clamp(420px,75vh,700px);
+  display:flex;align-items:center;
+  background:
+    linear-gradient(90deg,var(--cobalt-08) 1px,transparent 1px),
+    linear-gradient(0deg,var(--cobalt-08) 1px,transparent 1px),
+    linear-gradient(to right,rgba(245,240,235,.95) 0%,rgba(245,240,235,.85) 50%,rgba(245,240,235,.6) 100%),
+    url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1200&q=70');
+  background-size:clamp(30px,5vw,60px) clamp(30px,5vw,60px),clamp(30px,5vw,60px) clamp(30px,5vw,60px),cover,cover;
+  background-position:center center;
+  overflow:hidden;
+}
+.hero-inner{
+  max-width:1360px;margin:0 auto;padding:0 var(--grid-gap);
+  width:100%;
+  display:grid;grid-template-columns:1fr 1fr;gap:var(--grid-gap);
+  align-items:center;
+}
+.hero-text{position:relative;z-index:2}
+.hero-eyebrow{
+  font-family:var(--font-mono);font-size:clamp(11px,1.5vw,13px);
+  letter-spacing:.2em;text-transform:uppercase;color:var(--orange);
+  margin-bottom:clamp(12px,2vw,24px);
+}
+.hero-title{
+  font-size:clamp(42px,8vw,96px);
+  font-weight:800;line-height:.9;letter-spacing:-.03em;
+  color:var(--cobalt);
+}
+.hero-title span{display:block;color:var(--graphite)}
+.hero-desc{
+  margin-top:clamp(16px,3vw,32px);
+  font-size:clamp(15px,2vw,18px);color:var(--graphite-60);
+  max-width:440px;line-height:1.7;
+}
+.hero-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-top:clamp(24px,4vw,40px);
+  background:var(--orange);color:var(--white);
+  font-family:var(--font-mono);font-size:14px;letter-spacing:.08em;
+  padding:14px 28px;border-radius:var(--radius);
+  transition:background .2s,transform .2s;
+}
+.hero-cta:hover,.hero-cta:focus-visible{background:var(--orange-hov);transform:translateY(-1px)}
+.hero-cta:active{transform:translateY(0)}
+
+.hero-visual{
+  position:relative;aspect-ratio:1;
+  display:flex;align-items:center;justify-content:center;
+}
+.hero-geo{
+  width:100%;height:100%;
+}
+.hero-geo .grid{stroke:var(--cobalt-15);stroke-width:.5;fill:none}
+.hero-geo .main-shape{fill:var(--cobalt-08);stroke:var(--cobalt);stroke-width:1.5}
+.hero-geo .accent{stroke:var(--orange);stroke-width:1;fill:none;stroke-dasharray:4 4}
+.hero-geo .dim-line{stroke:var(--graphite-30);stroke-width:.5}
+.hero-geo .dim-text{font-family:var(--font-mono);font-size:9px;fill:var(--graphite-60)}
+
+/* ============================================================
+   CONFIGURATOR
+   ============================================================ */
+.configurator{background:var(--white)}
+.cfg-grid{
+  display:grid;
+  grid-template-columns:280px 1fr 280px;
+  gap:clamp(20px,3vw,40px);
+  align-items:start;
+}
+
+/* --- Module Panel --- */
+.module-panel{display:flex;flex-direction:column;gap:12px}
+.module-card{
+  background:var(--milk);border:1px solid var(--cobalt-15);
+  border-radius:var(--radius);padding:clamp(12px,2vw,16px);
+  display:grid;grid-template-columns:1fr auto;
+  grid-template-rows:auto auto;gap:4px 12px;
+  align-items:center;
+  transition:border-color .2s;
+}
+.module-card:hover{border-color:var(--cobalt-50)}
+.module-card .mod-name{
+  font-size:13px;font-weight:600;color:var(--graphite);
+  line-height:1.3;
+}
+.module-card .mod-price{
+  font-family:var(--font-mono);font-size:11px;color:var(--graphite-60);
+}
+.module-card .mod-controls{
+  grid-column:2;grid-row:1 / -1;
+  display:flex;align-items:center;gap:4px;
+}
+.mod-btn{
+  width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--graphite-30);border-radius:var(--radius);
+  font-family:var(--font-mono);font-size:16px;line-height:1;
+  color:var(--graphite);transition:border-color .15s,color .15s,background-color .15s;
+}
+.mod-btn:hover,.mod-btn:focus-visible{
+  border-color:var(--orange);color:var(--orange);background:var(--orange-15);
+}
+.mod-btn:disabled{opacity:.3;pointer-events:none}
+.mod-count{
+  font-family:var(--font-mono);font-size:15px;font-weight:600;
+  min-width:28px;text-align:center;color:var(--cobalt);
+}
+
+/* --- Blueprint SVG --- */
+.blueprint-wrapper{
+  background:var(--milk);
+  border:1px solid var(--cobalt-15);
+  border-radius:var(--radius);
+  overflow:hidden;
+  aspect-ratio:4/3;
+  min-height:300px;
+  position:relative;
+}
+.blueprint-wrapper svg{width:100%;height:100%}
+.blueprint-label{
+  position:absolute;top:12px;left:16px;
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;
+  color:var(--graphite-60);text-transform:uppercase;
+}
+
+/* --- Summary Panel --- */
+.summary-panel{
+  display:flex;flex-direction:column;gap:20px;
+}
+.summary-card{
+  background:var(--milk);border:1px solid var(--cobalt-15);
+  border-radius:var(--radius);padding:clamp(16px,2.5vw,24px);
+}
+.summary-card h3{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--graphite-60);margin-bottom:12px;
+}
+.spec-item{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:6px 0;border-bottom:1px dotted var(--graphite-10);
+  font-size:14px;
+}
+.spec-item dt{color:var(--graphite-60)}
+.spec-item dd{font-family:var(--font-mono);font-weight:600;color:var(--cobalt)}
+.spec-item.total{border-bottom:none;margin-top:8px;padding-top:12px;border-top:1px solid var(--cobalt-50)}
+.spec-item.total dt{font-size:15px;font-weight:600;color:var(--graphite)}
+.spec-item.total dd{font-size:clamp(18px,3vw,24px);color:var(--orange)}
+
+/* --- Fabric & Color --- */
+.picker-group{margin-top:4px}
+.picker-group h3{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--graphite-60);margin-bottom:10px;
+}
+.fabric-row,.color-row{
+  display:flex;flex-wrap:wrap;gap:8px;
+}
+.fabric-radio,.color-radio{position:absolute;opacity:0;width:0;height:0}
+.fabric-label{
+  display:block;padding:6px 14px;
+  font-size:13px;border:1px solid var(--graphite-30);border-radius:var(--radius);
+  cursor:pointer;transition:border-color .2s,color .2s,background-color .2s,transform .2s,box-shadow .2s;
+  font-family:var(--font-mono);letter-spacing:.04em;
+}
+.fabric-label:hover{border-color:var(--cobalt-50)}
+.fabric-radio:checked + .fabric-label{
+  border-color:var(--cobalt);background:var(--cobalt);color:var(--white);
+}
+.fabric-radio:focus-visible + .fabric-label{outline:2px solid var(--orange);outline-offset:2px}
+
+.color-swatch{
+  display:block;width:32px;height:32px;border-radius:50%;
+  border:2px solid transparent;cursor:pointer;transition:border-color .2s,color .2s,background-color .2s,transform .2s,box-shadow .2s;
+  position:relative;
+}
+.color-swatch:hover{transform:scale(1.1)}
+.color-radio:checked + .color-swatch{
+  border-color:var(--graphite);
+  box-shadow:0 0 0 2px var(--milk),0 0 0 4px var(--graphite);
+}
+.color-radio:focus-visible + .color-swatch{outline:2px solid var(--orange);outline-offset:3px}
+
+/* --- Add to Cart --- */
+.add-cart-btn{
+  width:100%;padding:16px 24px;
+  background:var(--orange);color:var(--white);
+  font-family:var(--font-mono);font-size:15px;font-weight:600;
+  letter-spacing:.06em;border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:background .2s,transform .2s;
+}
+.add-cart-btn:hover,.add-cart-btn:focus-visible{background:var(--orange-hov)}
+.add-cart-btn:active{transform:scale(.98)}
+.add-cart-btn.in-cart{
+  background:var(--cobalt);
+  pointer-events:none;
+}
+.add-cart-btn .check-icon{
+  display:none;font-size:18px;
+}
+.add-cart-btn.in-cart .check-icon{display:inline}
+.add-cart-btn.in-cart .btn-label-text{opacity:.8}
+
+/* ============================================================
+   CATALOG
+   ============================================================ */
+.catalog-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));
+  gap:clamp(20px,3vw,32px);
+  margin-top:clamp(32px,5vw,48px);
+}
+.catalog-card{
+  background:var(--white);border:1px solid var(--cobalt-15);
+  border-radius:var(--radius);overflow:hidden;
+  transition:border-color .3s,box-shadow .3s;
+}
+.catalog-card:hover{border-color:var(--cobalt-50);box-shadow:0 4px 24px var(--cobalt-08)}
+.catalog-card-visual{
+  background:var(--milk);
+  padding:clamp(24px,4vw,40px);
+  display:flex;align-items:center;justify-content:center;
+  border-bottom:1px solid var(--cobalt-15);
+  aspect-ratio:16/10;
+  position:relative;
+}
+.catalog-card-visual svg{width:100%;height:100%}
+.catalog-card-body{padding:clamp(16px,2.5vw,24px)}
+.catalog-card-body h3{
+  font-size:clamp(18px,2.5vw,22px);font-weight:700;
+  color:var(--cobalt);margin-bottom:4px;
+}
+.catalog-card-body .cfg-name{font-size:13px;color:var(--graphite-60);margin-bottom:12px}
+.cfg-specs{display:flex;flex-wrap:wrap;gap:8px 20px;margin-bottom:16px}
+.cfg-specs span{
+  font-family:var(--font-mono);font-size:12px;color:var(--graphite-60);
+}
+.cfg-specs strong{color:var(--cobalt)}
+.cfg-price{
+  font-family:var(--font-mono);font-size:clamp(18px,3vw,24px);
+  font-weight:700;color:var(--orange);
+}
+.cfg-load-btn{
+  margin-top:12px;padding:8px 16px;
+  font-size:13px;font-family:var(--font-mono);letter-spacing:.04em;
+  border:1px solid var(--graphite-30);border-radius:var(--radius);
+  color:var(--graphite);transition:border-color .2s,color .2s,background-color .2s,transform .2s,box-shadow .2s;
+}
+.cfg-load-btn:hover,.cfg-load-btn:focus-visible{
+  border-color:var(--orange);color:var(--orange);background:var(--orange-15);
+}
+
+/* ============================================================
+   MATERIALS
+   ============================================================ */
+.materials{background:var(--white)}
+.materials-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));
+  gap:clamp(16px,2.5vw,24px);
+  margin-top:clamp(32px,5vw,48px);
+}
+.material-card{
+  border:1px solid var(--cobalt-15);border-radius:var(--radius);
+  overflow:hidden;transition:border-color .3s;
+}
+.material-card:hover{border-color:var(--cobalt-50)}
+.material-swatch{
+  height:clamp(120px,16vw,160px);
+  position:relative;overflow:hidden;
+}
+.swatch-velvet{
+  background:linear-gradient(to bottom,rgba(26,58,92,.4),rgba(26,58,92,.6)),url('https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&q=70');background-size:cover;background-position:center;
+}
+.swatch-matting{
+  background:linear-gradient(to bottom,rgba(180,168,144,.3),rgba(180,168,144,.5)),url('https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=400&q=70');background-size:cover;background-position:center;
+}
+.swatch-chenille{
+  background:linear-gradient(to bottom,rgba(101,122,90,.3),rgba(101,122,90,.5)),url('https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=400&q=70');background-size:cover;background-position:center;
+}
+.swatch-leather{
+  background:linear-gradient(to bottom,rgba(107,80,64,.3),rgba(107,80,64,.5)),url('https://images.unsplash.com/photo-1531835551805-16d864c8d311?w=400&q=70');background-size:cover;background-position:center;
+}
+.swatch-label{
+  position:absolute;bottom:12px;left:16px;
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--white);opacity:.8;
+}
+.material-info{padding:clamp(14px,2vw,20px)}
+.material-info h3{font-size:16px;font-weight:700;color:var(--cobalt);margin-bottom:4px}
+.material-info p{font-size:13px;color:var(--graphite-60);line-height:1.5}
+.material-props{
+  display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;
+}
+.material-props span{
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.05em;
+  padding:3px 8px;border:1px solid var(--cobalt-15);border-radius:var(--radius);
+  color:var(--cobalt-80);
+}
+
+/* ============================================================
+   DELIVERY
+   ============================================================ */
+.delivery-steps{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));
+  gap:clamp(16px,2.5vw,32px);
+  margin-top:clamp(32px,5vw,48px);
+  counter-reset:step;
+}
+.step-card{
+  position:relative;padding:clamp(20px,3vw,28px);
+  border:1px solid var(--cobalt-15);border-radius:var(--radius);
+  background:var(--white);transition:border-color .3s;
+}
+.step-card:hover{border-color:var(--cobalt-50)}
+.step-card::before{
+  counter-increment:step;content:counter(step,decimal-leading-zero);
+  font-family:var(--font-mono);font-size:clamp(32px,5vw,48px);
+  font-weight:700;color:var(--cobalt-15);
+  line-height:1;
+}
+.step-card h3{font-size:15px;font-weight:700;color:var(--cobalt);margin:8px 0 4px}
+.step-card p{font-size:13px;color:var(--graphite-60);line-height:1.5}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.site-footer{
+  background:var(--cobalt);color:var(--white);
+  padding:clamp(40px,7vw,80px) var(--grid-gap);
+}
+.footer-grid{
+  max-width:1360px;margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));
+  gap:clamp(24px,4vw,48px);
+}
+.footer-col h4{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;opacity:.6;margin-bottom:16px;
+}
+.footer-col p,.footer-col li{font-size:13px;opacity:.8;line-height:1.8}
+.footer-col a{opacity:.8;transition:opacity .2s}
+.footer-col a:hover{opacity:1;text-decoration:underline}
+.footer-disclaimer{
+  margin-top:clamp(32px,5vw,48px);padding-top:24px;
+  border-top:1px solid rgba(255,255,255,.15);
+  font-size:12px;opacity:.5;max-width:600px;line-height:1.6;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:1024px){
+  .cfg-grid{
+    grid-template-columns:1fr;
+    gap:20px;
+  }
+  .module-panel{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    gap:8px;
+  }
+  .blueprint-wrapper{aspect-ratio:3/2;min-height:250px}
+  .summary-panel{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+  .summary-panel .add-cart-btn{grid-column:1/-1}
+}
+
+@media (max-width:768px){
+  .hero-inner{grid-template-columns:1fr}
+  .hero-visual{display:none}
+  .main-nav{display:none}
+  .summary-panel{grid-template-columns:1fr}
+  .module-panel{grid-template-columns:1fr}
+  .catalog-grid{grid-template-columns:1fr}
+  .materials-grid{grid-template-columns:1fr 1fr}
+}
+
+@media (max-width:480px){
+  .materials-grid{grid-template-columns:1fr}
+  .delivery-steps{grid-template-columns:1fr}
+  .module-card{padding:12px}
+  .mod-btn{width:28px;height:28px;font-size:14px}
+}
+
+/* ============================================================
+   MOTION
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    transition-duration:.01ms !important;
+    scroll-behavior:auto !important;
+  }
+}
+.preloader{position:fixed;inset:0;z-index:99999;background:var(--milk);display:flex;align-items:center;justify-content:center;transition:opacity .8s ease,visibility .8s}
+.preloader.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.preloader-inner{display:flex;flex-direction:column;align-items:center;gap:20px}
+.preloader-ring{width:60px;height:60px;border-radius:50%;border:2px solid var(--graphite-10);border-top-color:var(--orange);border-right-color:var(--cobalt);animation:preloader-spin 1s linear infinite}
+@keyframes preloader-spin{to{transform:rotate(360deg)}}
+.preloader-logo{font-family:var(--font-mono);font-size:20px;letter-spacing:.3em;color:var(--cobalt);text-transform:uppercase;font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="preloader" id="preloader">
+  <div class="preloader-inner">
+    <div class="preloader-ring"></div>
+    <span class="preloader-logo">FORMA</span>
+  </div>
+</div>
+
+<!-- SKIP LINK -->
+<a href="#main-content" class="skip-link">Пропустить навигацию</a>
+
+<!-- HEADER -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <a href="#" class="logo" aria-label="FORMA — на главную">Forma</a>
+    <nav class="main-nav" aria-label="Основная навигация">
+      <a href="#configurator">Конфигуратор</a>
+      <a href="#catalog">Каталог</a>
+      <a href="#materials">Материалы</a>
+      <a href="#delivery">Доставка</a>
+    </nav>
+    <button class="cart-btn" aria-label="Корзина" id="header-cart-btn">
+      <span class="cart-icon" aria-hidden="true">▦</span>
+      <span>Корзина</span>
+      <span class="cart-count" id="cart-count" aria-live="polite">0</span>
+    </button>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main id="main-content">
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="hero section" aria-labelledby="hero-title">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <p class="hero-eyebrow">Модульная система</p>
+      <h1 id="hero-title" class="hero-title">
+        <span>Мебель</span>FORMA
+      </h1>
+      <p class="hero-desc">
+        Архитектура вашего пространства. Соберите диван по модульному принципу — как конструктор, с точностью чертежа.
+      </p>
+      <a href="#configurator" class="hero-cta">
+        Собрать свой ›
+      </a>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <svg class="hero-geo" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="heroGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" class="grid"/>
+          </pattern>
+        </defs>
+        <rect width="400" height="400" fill="url(#heroGrid)"/>
+        <rect x="120" y="80" width="160" height="100" rx="4" class="main-shape"/>
+        <rect x="120" y="200" width="160" height="100" rx="4" class="main-shape" fill-opacity="0.5"/>
+        <rect x="80" y="120" width="160" height="100" rx="4" class="main-shape" fill-opacity="0.7"/>
+        <line x1="80" y1="60" x2="280" y2="60" class="accent"/>
+        <line x1="80" y1="55" x2="80" y2="65" class="dim-line"/>
+        <line x1="280" y1="55" x2="280" y2="65" class="dim-line"/>
+        <text x="180" y="52" text-anchor="middle" class="dim-text">~3000 мм</text>
+        <line x1="60" y1="120" x2="60" y2="320" class="accent"/>
+        <text x="52" y="225" text-anchor="middle" class="dim-text" transform="rotate(-90,52,225)">~2000 мм</text>
+        <circle cx="80" cy="120" r="4" fill="#FF4D00" opacity=".6"/>
+        <circle cx="280" cy="120" r="4" fill="#FF4D00" opacity=".6"/>
+        <circle cx="80" cy="320" r="4" fill="#FF4D00" opacity=".6"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CONFIGURATOR
+     ============================================================ -->
+<section class="configurator section" id="configurator" aria-labelledby="cfg-title">
+  <div class="section-inner">
+    <p class="section-label">Интерактивный инструмент</p>
+    <h2 id="cfg-title" class="section-title">Подбор модулей</h2>
+    <p class="section-subtitle">Спроектируйте диван под своё пространство. Каждый модуль — самостоятельный блок; собирайте, меняйте, смотрите на результат в реальном времени.</p>
+
+    <div class="cfg-grid" style="margin-top:clamp(32px,5vw,48px)">
+      <!-- Module Panel -->
+      <div class="module-panel" id="module-panel" role="group" aria-label="Выбор модулей">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Blueprint -->
+      <div class="blueprint-wrapper" role="img" aria-label="Чертёж конфигурации дивана">
+        <span class="blueprint-label">Вид сверху · масштаб 1:10</span>
+        <svg id="blueprint-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400"></svg>
+      </div>
+
+      <!-- Summary -->
+      <div class="summary-panel" id="summary-panel">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CATALOG
+     ============================================================ -->
+<section class="section" id="catalog" aria-labelledby="cat-title">
+  <div class="section-inner">
+    <p class="section-label">Готовые решения</p>
+    <h2 id="cat-title" class="section-title">Популярные конфигурации</h2>
+    <p class="section-subtitle">Проверенные сочетания модулей для типовых планировок. Каждую можно взять за основу и доработать в конфигураторе.</p>
+    <div class="catalog-grid" id="catalog-grid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     MATERIALS
+     ============================================================ -->
+<section class="materials section" id="materials" aria-labelledby="mat-title">
+  <div class="section-inner">
+    <p class="section-label">Тактильное</p>
+    <h2 id="mat-title" class="section-title">Материалы</h2>
+    <p class="section-subtitle">Четыре фактуры для любого интерьера. От мягкого велюра до структурной кожи.</p>
+    <div class="materials-grid">
+      <article class="material-card">
+        <div class="material-swatch swatch-velvet"><span class="swatch-label">Кат. A</span></div>
+        <div class="material-info">
+          <h3>Велюр</h3>
+          <p>Плотный ворс с глубоким благородным отливом. Мягкий на ощупь, устойчив к истиранию.</p>
+          <div class="material-props">
+            <span>200 000 циклов</span><span>100% полиэстер</span><span>Гипоаллергенный</span>
+          </div>
+        </div>
+      </article>
+      <article class="material-card">
+        <div class="material-swatch swatch-matting"><span class="swatch-label">Кат. B</span></div>
+        <div class="material-info">
+          <h3>Рогожка</h3>
+          <p>Крупное плетение с выраженной текстурой. Натуральный вид, повышенная износостойкость.</p>
+          <div class="material-props">
+            <span>150 000 циклов</span><span>85% полиэстер / 15% лён</span><span>Антикоготь</span>
+          </div>
+        </div>
+      </article>
+      <article class="material-card">
+        <div class="material-swatch swatch-chenille"><span class="swatch-label">Кат. C</span></div>
+        <div class="material-info">
+          <h3>Шенилл</h3>
+          <p>Бархатистая поверхность с характерным продольным рубчиком. Мягкость велюра в практичном исполнении.</p>
+          <div class="material-props">
+            <span>180 000 циклов</span><span>100% акрил</span><span>Не выгорает</span>
+          </div>
+        </div>
+      </article>
+      <article class="material-card">
+        <div class="material-swatch swatch-leather"><span class="swatch-label">Кат. D</span></div>
+        <div class="material-info">
+          <h3>Кожа</h3>
+          <p>Натуральная кожа растительного дубления. С возрастом приобретает патину и только выигрывает.</p>
+          <div class="material-props">
+            <span>500 000 циклов</span><span>Full-grain</span><span>Анилиновая отделка</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     DELIVERY
+     ============================================================ -->
+<section class="section" id="delivery" aria-labelledby="del-title">
+  <div class="section-inner">
+    <p class="section-label">От цеха до гостиной</p>
+    <h2 id="del-title" class="section-title">Доставка и сервис</h2>
+    <p class="section-subtitle">Модульная конструкция означает простую логистику. Каждый блок упакован отдельно и без труда проходит в стандартный дверной проём.</p>
+    <div class="delivery-steps">
+      <div class="step-card">
+        <h3>Заказ и согласование</h3>
+        <p>Консультация по телефону или онлайн. Утверждение конфигурации, ткани и цвета. Счёт выставляется в день согласования.</p>
+      </div>
+      <div class="step-card">
+        <h3>Производство</h3>
+        <p>Сборка модулей на заказ — от 14 до 21 рабочего дня. Фотоотчёт с производства перед отправкой.</p>
+      </div>
+      <div class="step-card">
+        <h3>Доставка</h3>
+        <p>Бесплатно по городу при заказе от 80 000 ₽. Подъём на этаж включён. Каждый модуль в защитной упаковке.</p>
+      </div>
+      <div class="step-card">
+        <h3>Сборка и гарантия</h3>
+        <p>Модули стыкуются за 15 минут без инструмента. Гарантия 5 лет на каркас, 2 года на обивку. Обмен модуля в течение 30 дней.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-grid">
+    <div class="footer-col" style="grid-column:1/-1">
+      <a href="../../index.html" style="display:inline-block;font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;color:var(--orange);text-transform:uppercase;border:1px solid var(--orange);padding:10px 24px;border-radius:var(--radius);transition:background .3s,color .3s" onmouseover="this.style.background='var(--orange)';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='var(--orange)'">← Все проекты</a>
+    </div>
+    <div class="footer-col">
+      <h4>FORMA</h4>
+      <p>Модульные диваны по принципу архитектурного конструктора. Переосмысление мебели через геометрию и свободу конфигурации.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Разделы</h4>
+      <ul>
+        <li><a href="#configurator">Конфигуратор</a></li>
+        <li><a href="#catalog">Каталог</a></li>
+        <li><a href="#materials">Материалы</a></li>
+        <li><a href="#delivery">Доставка</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Контакты</h4>
+      <ul>
+        <li>+7 (999) 123-45-67</li>
+        <li>hello@forma-design.ru</li>
+        <li>Москва, дизайн-завод «Флакон»</li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Документы</h4>
+      <ul>
+        <li><a href="#">Политика конфиденциальности</a></li>
+        <li><a href="#">Условия возврата</a></li>
+        <li><a href="#">Гарантийные обязательства</a></li>
+      </ul>
+    </div>
+  </div>
+  <p class="footer-disclaimer">
+    Концептуальный проект для портфолио. FORMA не является зарегистрированным брендом. Все изображения — визуализации. Цены и конфигурации носят демонстрационный характер.
+  </p>
+</footer>
+
+<!-- ============================================================
+     SCRIPTS
+     ============================================================ -->
+<script>
+(function(){
+'use strict';
+
+window.addEventListener('load',function(){setTimeout(function(){var p=document.getElementById('preloader');if(p)p.classList.add('hidden');},2000);});
+
+/* ============================================================
+   DATA
+   ============================================================ */
+const MODULES = {
+  seat:      { type:'seat',      name:'Посадочный модуль',     w:80, d:90, price:18500, key:'seat' },
+  corner:    { type:'corner',    name:'Угловой модуль',        w:90, d:90, price:22000, key:'corner' },
+  armrestL:  { type:'armrestL',  name:'Подлокотник левый',     w:20, d:90, price:8500,  key:'armrestLeft' },
+  armrestR:  { type:'armrestR',  name:'Подлокотник правый',    w:20, d:90, price:8500,  key:'armrestRight' },
+  ottoman:   { type:'ottoman',   name:'Пуф',                   w:80, d:80, price:15000,  key:'ottoman' }
+};
+
+const FABRICS = [
+  { id:'velvet',   name:'Велюр',    mult:1.0 },
+  { id:'matting',  name:'Рогожка',  mult:0.85 },
+  { id:'chenille', name:'Шенилл',   mult:1.1 },
+  { id:'leather',  name:'Кожа',     mult:1.5 }
+];
+
+const COLORS = [
+  { id:'graphite',   name:'Графит',    hex:'#3D3D3D' },
+  { id:'cobalt',     name:'Кобальт',   hex:'#1A3A5C' },
+  { id:'terracotta', name:'Терракота', hex:'#C67B5C' },
+  { id:'sage',       name:'Шалфей',    hex:'#8B9E7C' }
+];
+
+const PRESETS = [
+  {
+    name:'Минимал', desc:'Компактный двухместный',
+    modules:{ seat:2, corner:0, armrestLeft:1, armrestRight:1, ottoman:0 },
+    fabric:'matting', color:'graphite'
+  },
+  {
+    name:'Комфорт', desc:'Трёхместный с пуфом',
+    modules:{ seat:3, corner:0, armrestLeft:1, armrestRight:1, ottoman:1 },
+    fabric:'velvet', color:'cobalt'
+  },
+  {
+    name:'Простор', desc:'Угловой L-образный',
+    modules:{ seat:2, corner:1, armrestLeft:1, armrestRight:1, ottoman:0 },
+    fabric:'chenille', color:'terracotta'
+  }
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  modules: { seat:2, corner:0, armrestLeft:1, armrestRight:1, ottoman:0 },
+  fabric:'velvet',
+  color:'graphite',
+  cartItemCount:0,
+  addedThisSession:false
+};
+
+/* ============================================================
+   COMPUTED HELPERS
+   ============================================================ */
+function getActiveColor(){return COLORS.find(c=>c.id===state.color)||COLORS[0]}
+function getActiveFabric(){return FABRICS.find(f=>f.id===state.fabric)||FABRICS[0]}
+
+function calcBasePrice(){
+  let sum=0;
+  for(const [k,v] of Object.entries(state.modules)){
+    const meta=Object.values(MODULES).find(m=>m.key===k);
+    if(meta) sum+=meta.price * v;
+  }
+  return sum;
+}
+function calcTotalPrice(){return Math.round(calcBasePrice() * getActiveFabric().mult)}
+
+function calcDimensions(){
+  const m=state.modules;
+  const hasCorner=m.corner>0;
+  const preSeats=hasCorner ? Math.ceil(m.seat/2) : m.seat;
+  const postSeats=hasCorner ? m.seat - preSeats : 0;
+
+  const row1W = (m.armrestLeft>0?20:0) + preSeats*80 + (hasCorner?90:0) + (!hasCorner&&m.armrestRight>0?20:0);
+  const row2W = postSeats*80 + (hasCorner&&m.armrestRight>0?20:0);
+  const cornerX = hasCorner ? row1W - 90 : 0;
+
+  const totalW = hasCorner ? Math.max(row1W, cornerX+row2W) : row1W;
+  const totalD = hasCorner ? 180 : 90;
+  return {totalW,totalD,row1W,row2W,cornerX,hasCorner,preSeats,postSeats};
+}
+
+/* ============================================================
+   RENDER BLUEPRINT SVG
+   ============================================================ */
+function renderBlueprint(){
+  const svg=document.getElementById('blueprint-svg');
+  const dims=calcDimensions();
+  const col=getActiveColor();
+  const PAD=30, GAP=2;
+
+  const svgW=Math.max(dims.totalW+2*PAD + (dims.hasCorner?20:0) + (state.modules.ottoman>0?100:0), 280);
+  const ottomanY = dims.hasCorner ? 180+PAD+20 : 90+PAD+20;
+  const svgH=(state.modules.ottoman>0 ? ottomanY+80+PAD : (dims.hasCorner?180:90)+2*PAD);
+
+  let h='';
+  h+=`<rect width="${svgW}" height="${svgH}" fill="#F5F0EB"/>`;
+
+  // Grid
+  for(let x=0;x<svgW;x+=20) h+=`<line x1="${x}" y1="0" x2="${x}" y2="${svgH}" stroke="#E0D8CF" stroke-width=".5"/>`;
+  for(let y=0;y<svgH;y+=20) h+=`<line x1="0" y1="${y}" x2="${svgW}" y2="${y}" stroke="#E0D8CF" stroke-width=".5"/>`;
+
+  // Build row modules
+  const row1=[], row2=[];
+  if(state.modules.armrestLeft>0) row1.push({type:'armrestL',w:20,d:90});
+  for(let i=0;i<dims.preSeats;i++) row1.push({type:'seat',w:80,d:90});
+  if(dims.hasCorner) row1.push({type:'corner',w:90,d:90});
+  if(!dims.hasCorner && state.modules.armrestRight>0) row1.push({type:'armrestR',w:20,d:90});
+
+  if(dims.hasCorner){
+    for(let i=0;i<dims.postSeats;i++) row2.push({type:'seat',w:80,d:90});
+    if(state.modules.armrestRight>0) row2.push({type:'armrestR',w:20,d:90});
+  }
+
+  function drawModule(x,y,w,d,type){
+    const isCorner=type==='corner';
+    const fill=isCorner?'#1A3A5C':col.hex;
+    const fillOp=isCorner?1:.82;
+    const lbl={armrestL:'Л',armrestR:'П',seat:'',corner:'У'}[type]||'';
+    h+=`<rect x="${x}" y="${y}" width="${w-GAP}" height="${d-GAP}" fill="${fill}" fill-opacity="${fillOp}" stroke="#1A3A5C" stroke-width="1.2" rx="2"/>`;
+    if(lbl) h+=`<text x="${x+(w-GAP)/2}" y="${y+(d-GAP)/2+4}" text-anchor="middle" fill="white" font-family="monospace" font-size="12" font-weight="bold">${lbl}</text>`;
+    // Seat number inside
+    if(type==='seat'){
+      h+=`<text x="${x+(w-GAP)/2}" y="${y+(d-GAP)/2+4}" text-anchor="middle" fill="white" font-family="monospace" font-size="11">S</text>`;
+    }
+  }
+
+  // Row 1
+  let cx=PAD, cy=PAD;
+  for(const m of row1){drawModule(cx,cy,m.w,m.d,m.type);cx+=m.w}
+  // Row 2
+  if(row2.length>0){
+    cx=PAD + dims.cornerX; cy=PAD+90;
+    for(const m of row2){drawModule(cx,cy,m.w,m.d,m.type);cx+=m.w}
+  }
+
+  // Ottoman
+  if(state.modules.ottoman>0){
+    const ox = PAD + dims.totalW + 30;
+    const oy = (dims.hasCorner ? PAD+180 : PAD+90) - 40;
+    h+=`<rect x="${ox}" y="${oy}" width="80" height="80" fill="${col.hex}" fill-opacity=".82" stroke="#1A3A5C" stroke-width="1.2" rx="2" stroke-dasharray="4 2"/>`;
+    h+=`<text x="${ox+40}" y="${oy+44}" text-anchor="middle" fill="white" font-family="monospace" font-size="11">П</text>`;
+    // leader line
+    h+=`<line x1="${ox}" y1="${oy+40}" x2="${PAD+dims.totalW+10}" y2="${oy+40}" stroke="#FF4D00" stroke-width=".7" stroke-dasharray="3 3"/>`;
+  }
+
+  // Dimension lines — width
+  h+=`<line x1="${PAD}" y1="${PAD-12}" x2="${PAD}" y2="${PAD-4}" stroke="#2D2D2D" stroke-width=".6"/>`;
+  h+=`<line x1="${PAD+dims.totalW}" y1="${PAD-12}" x2="${PAD+dims.totalW}" y2="${PAD-4}" stroke="#2D2D2D" stroke-width=".6"/>`;
+  h+=`<line x1="${PAD}" y1="${PAD-8}" x2="${PAD+dims.totalW}" y2="${PAD-8}" stroke="#FF4D00" stroke-width=".7"/>`;
+  h+=`<text x="${PAD+dims.totalW/2}" y="${PAD-14}" text-anchor="middle" font-family="monospace" font-size="9" fill="#2D2D2D">${dims.totalW}0 мм</text>`;
+
+  // Depth
+  const depthY = dims.hasCorner ? PAD+180 : PAD+90;
+  h+=`<line x1="${PAD-12}" y1="${PAD}" x2="${PAD-4}" y2="${PAD}" stroke="#2D2D2D" stroke-width=".6"/>`;
+  h+=`<line x1="${PAD-12}" y1="${depthY}" x2="${PAD-4}" y2="${depthY}" stroke="#2D2D2D" stroke-width=".6"/>`;
+  h+=`<line x1="${PAD-8}" y1="${PAD}" x2="${PAD-8}" y2="${depthY}" stroke="#FF4D00" stroke-width=".7"/>`;
+  h+=`<text x="${PAD-14}" y="${PAD+(depthY-PAD)/2+3}" text-anchor="end" font-family="monospace" font-size="9" fill="#2D2D2D">${dims.totalD}0 мм</text>`;
+
+  // Title block
+  h+=`<rect x="${svgW-150}" y="${svgH-30}" width="140" height="22" fill="none" stroke="#1A3A5C" stroke-width=".7"/>`;
+  h+=`<text x="${svgW-80}" y="${svgH-15}" text-anchor="middle" font-family="monospace" font-size="8" fill="#1A3A5C">FORMA · ${col.name.toUpperCase()}</text>`;
+
+  svg.setAttribute('viewBox',`0 0 ${svgW} ${svgH}`);
+  svg.innerHTML=h;
+}
+
+/* ============================================================
+   RENDER MODULE PANEL
+   ============================================================ */
+function renderModulePanel(){
+  const panel=document.getElementById('module-panel');
+  const entries=[
+    {meta:MODULES.seat,     key:'seat'},
+    {meta:MODULES.corner,   key:'corner'},
+    {meta:MODULES.armrestL, key:'armrestLeft'},
+    {meta:MODULES.armrestR, key:'armrestRight'},
+    {meta:MODULES.ottoman,  key:'ottoman'}
+  ];
+  panel.innerHTML=entries.map(e=>{
+    const count=state.modules[e.key];
+    const max=e.key==='corner'?1:e.key==='armrestLeft'?1:e.key==='armrestRight'?1:6;
+    return `<div class="module-card">
+      <div class="mod-name">${e.meta.name}</div>
+      <div class="mod-price">${e.meta.price.toLocaleString('ru')} ₽</div>
+      <div class="mod-controls">
+        <button class="mod-btn" data-action="dec" data-key="${e.key}" ${count<=0?'disabled':''} aria-label="Убрать ${e.meta.name}">−</button>
+        <span class="mod-count">${count}</span>
+        <button class="mod-btn" data-action="inc" data-key="${e.key}" ${count>=max?'disabled':''} aria-label="Добавить ${e.meta.name}">+</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ============================================================
+   RENDER SUMMARY PANEL
+   ============================================================ */
+function renderSummary(){
+  const panel=document.getElementById('summary-panel');
+  const dims=calcDimensions();
+  const base=calcBasePrice();
+  const total=calcTotalPrice();
+  const col=getActiveColor();
+  const fab=getActiveFabric();
+
+  const moduleList=Object.entries(state.modules)
+    .filter(([,v])=>v>0)
+    .map(([k,v])=>{
+      const meta=Object.values(MODULES).find(m=>m.key===k);
+      return meta ? {name:meta.name,count:v,price:meta.price*v} : null;
+    }).filter(Boolean);
+
+  panel.innerHTML=`
+    <div class="summary-card">
+      <h3>Спецификация</h3>
+      <dl>
+        <div class="spec-item"><dt>Габариты (Ш×Г)</dt><dd>${dims.totalW}0 × ${dims.totalD}0 мм</dd></div>
+        <div class="spec-item"><dt>Модулей</dt><dd>${moduleList.reduce((s,m)=>s+m.count,0)} шт.</dd></div>
+        ${moduleList.map(m=>`<div class="spec-item"><dt>${m.name} ×${m.count}</dt><dd>${m.price.toLocaleString('ru')} ₽</dd></div>`).join('')}
+        <div class="spec-item"><dt>Ткань</dt><dd>${fab.name}</dd></div>
+        <div class="spec-item"><dt>Цвет</dt><dd style="display:flex;align-items:center;gap:6px"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${col.hex};vertical-align:middle"></span>${col.name}</dd></div>
+        <div class="spec-item total"><dt>Итого</dt><dd>${total.toLocaleString('ru')} ₽</dd></div>
+      </dl>
+    </div>
+    <div class="summary-card">
+      <h3>Ткань</h3>
+      <div class="picker-group">
+        <div class="fabric-row" id="fabric-picker">
+          ${FABRICS.map(f=>`
+            <label>
+              <input type="radio" name="fabric" class="fabric-radio" value="${f.id}" ${state.fabric===f.id?'checked':''}>
+              <span class="fabric-label">${f.name}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="summary-card">
+      <h3>Цвет</h3>
+      <div class="picker-group">
+        <div class="color-row" id="color-picker">
+          ${COLORS.map(c=>`
+            <label>
+              <input type="radio" name="color" class="color-radio" value="${c.id}" ${state.color===c.id?'checked':''}>
+              <span class="color-swatch" style="background:${c.hex}" title="${c.name}"></span>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+    <button class="add-cart-btn" id="add-cart-btn">
+      <span class="check-icon" aria-hidden="true">✓</span>
+      <span class="btn-label-text">Добавить в корзину — ${total.toLocaleString('ru')} ₽</span>
+    </button>
+  `;
+  if(state.addedThisSession){
+    document.getElementById('add-cart-btn').classList.add('in-cart');
+    document.querySelector('#add-cart-btn .btn-label-text').textContent='В корзине';
+  }
+}
+
+/* ============================================================
+   RENDER CATALOG
+   ============================================================ */
+function renderCatalog(){
+  const grid=document.getElementById('catalog-grid');
+  grid.innerHTML=PRESETS.map((p,i)=>{
+    const fab=FABRICS.find(f=>f.id===p.fabric);
+    const col=COLORS.find(c=>c.id===p.color);
+    // Mini blueprint
+    const hasCorner=p.modules.corner>0;
+    const preS=hasCorner?Math.ceil(p.modules.seat/2):p.modules.seat;
+    const row1W=(p.modules.armrestLeft?20:0)+preS*80+(hasCorner?90:0)+(!hasCorner&&p.modules.armrestRight?20:0);
+    const totalW=hasCorner?Math.max(row1W,row1W-90+((p.modules.seat-preS)*80+(p.modules.armrestRight?20:0))):row1W;
+    const totalD=hasCorner?180:90;
+    const vW=totalW+40, vH=totalD+40;
+    let svgInner='';
+    svgInner+=`<rect width="${vW}" height="${vH}" fill="#F5F0EB" rx="4"/>`;
+    for(let x=0;x<vW;x+=15) svgInner+=`<line x1="${x}" y1="0" x2="${x}" y2="${vH}" stroke="#E0D8CF" stroke-width=".3"/>`;
+    for(let y=0;y<vH;y+=15) svgInner+=`<line x1="0" y1="${y}" x2="${vW}" y2="${y}" stroke="#E0D8CF" stroke-width=".3"/>`;
+    let cx2=20,cy2=20;
+    const draw=(w,d,t)=>{
+      const fill=(t==='corner')?'#1A3A5C':col.hex;
+      svgInner+=`<rect x="${cx2}" y="${cy2}" width="${w-2}" height="${d-2}" fill="${fill}" fill-opacity=".85" stroke="#1A3A5C" stroke-width=".8" rx="1.5"/>`;
+      cx2+=w;
+    };
+    if(p.modules.armrestLeft) draw(20,90,'armrestL');
+    for(let j=0;j<preS;j++) draw(80,90,'seat');
+    if(hasCorner){draw(90,90,'corner');cx2=20+row1W-90;cy2=20+90;
+      for(let j=0;j<p.modules.seat-preS;j++) draw(80,90,'seat');
+      if(p.modules.armrestRight) draw(20,90,'armrestR');
+    }else{if(p.modules.armrestRight) draw(20,90,'armrestR')}
+
+    const basePrice=(p.modules.seat*18500)+(p.modules.corner*22000)+(p.modules.armrestLeft*8500)+(p.modules.armrestRight*8500)+(p.modules.ottoman*15000);
+    const totalPrice=Math.round(basePrice*(fab?fab.mult:1));
+
+    return `<article class="catalog-card">
+      <div class="catalog-card-visual">
+        <svg viewBox="0 0 ${vW} ${vH}" xmlns="http://www.w3.org/2000/svg">${svgInner}</svg>
+      </div>
+      <div class="catalog-card-body">
+        <h3>«${p.name}»</h3>
+        <p class="cfg-name">${p.desc}</p>
+        <div class="cfg-specs">
+          <span>Ш×Г <strong>${totalW}0×${totalD}0 мм</strong></span>
+          <span>Ткань <strong>${fab?fab.name:'—'}</strong></span>
+          <span>Цвет <strong>${col?col.name:'—'}</strong></span>
+        </div>
+        <div class="cfg-price">${totalPrice.toLocaleString('ru')} ₽</div>
+        <button class="cfg-load-btn" data-preset="${i}">Загрузить в конфигуратор →</button>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+/* ============================================================
+   RENDER CART
+   ============================================================ */
+function renderCartCount(){
+  const el=document.getElementById('cart-count');
+  el.textContent=state.cartItemCount;
+  el.classList.add('bump');
+  setTimeout(()=>el.classList.remove('bump'),300);
+}
+
+/* ============================================================
+   FULL RENDER
+   ============================================================ */
+function renderAll(){
+  renderModulePanel();
+  renderBlueprint();
+  renderSummary();
+}
+
+/* ============================================================
+   EVENT HANDLERS
+   ============================================================ */
+document.addEventListener('click',function(e){
+  // Module +/- buttons
+  const modBtn=e.target.closest('.mod-btn');
+  if(modBtn){
+    const key=modBtn.dataset.key;
+    const action=modBtn.dataset.action;
+    if(action==='inc') state.modules[key]=(state.modules[key]||0)+1;
+    if(action==='dec') state.modules[key]=Math.max(0,(state.modules[key]||0)-1);
+    // Clamp
+    const maxes={corner:1,armrestLeft:1,armrestRight:1,seat:6,ottoman:6};
+    if(state.modules[key]>maxes[key]) state.modules[key]=maxes[key];
+    state.addedThisSession=false;
+    renderAll();
+    return;
+  }
+
+  // Catalog load preset
+  const loadBtn=e.target.closest('.cfg-load-btn');
+  if(loadBtn){
+    const idx=parseInt(loadBtn.dataset.preset);
+    const preset=PRESETS[idx];
+    if(preset){
+      state.modules={...preset.modules};
+      state.fabric=preset.fabric;
+      state.color=preset.color;
+      state.addedThisSession=false;
+      renderAll();
+      document.getElementById('configurator').scrollIntoView({behavior:'smooth'});
+    }
+    return;
+  }
+
+  // Add to cart
+  if(e.target.closest('#add-cart-btn') && !state.addedThisSession){
+    state.cartItemCount++;
+    state.addedThisSession=true;
+    renderCartCount();
+    renderAll();
+    return;
+  }
+});
+
+// Fabric & color change via delegation
+document.addEventListener('change',function(e){
+  if(e.target.name==='fabric'){
+    state.fabric=e.target.value;
+    state.addedThisSession=false;
+    renderAll();
+  }
+  if(e.target.name==='color'){
+    state.color=e.target.value;
+    state.addedThisSession=false;
+    renderAll();
+  }
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderAll();
+renderCatalog();
+
+})();
+</script>
+</body>
+</html>

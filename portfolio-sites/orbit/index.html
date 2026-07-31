@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="ORBIT — аналитическая платформа для бизнеса. Концептуальный проект для портфолио.">
+<title>ORBIT — Аналитическая платформа</title>
+<style>
+/* ===== CUSTOM PROPERTIES ===== */
+:root {
+  --bg-page:        #f8f9fb;
+  --bg-surface:     #ffffff;
+  --blue-900:       #0d1b4a;
+  --blue-800:       #162d6e;
+  --blue-700:       #1e3f94;
+  --blue-600:       #2d5cc4;
+  --blue-500:       #4a78e0;
+  --blue-400:       #7b9eeb;
+  --blue-200:       #c5d4f7;
+  --blue-100:       #e3ecfb;
+  --blue-50:        #f4f7fd;
+  --amber-800:      #b85e00;
+  --amber-600:      #f08800;
+  --amber-400:      #ffb833;
+  --amber-200:      #ffe0a3;
+  --amber-100:      #fff3db;
+  --amber-50:       #fffaee;
+  --green-700:      #1b7a2e;
+  --green-500:      #2ea843;
+  --green-100:      #e2f7e6;
+  --red-700:        #b91c1c;
+  --red-500:        #dc2f2f;
+  --red-100:        #fde8e8;
+  --text-primary:   #11142b;
+  --text-secondary: #4e5070;
+  --text-muted:     #8b8da8;
+  --text-placeholder:#b0b3cc;
+  --border:         #dce1f0;
+  --border-light:   #eef1f8;
+  --radius-sm:      6px;
+  --radius-md:      10px;
+  --radius-lg:      16px;
+  --radius-xl:      22px;
+  --shadow-sm:      0 1px 3px rgba(13,27,74,.06);
+  --shadow-md:      0 4px 14px rgba(13,27,74,.08);
+  --shadow-lg:      0 8px 30px rgba(13,27,74,.10);
+  --font:           'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-mono:      'JetBrains Mono','SF Mono','Cascadia Code','Fira Code',Consolas,monospace;
+  --transition:     220ms ease;
+}
+
+/* ===== RESET ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--font);font-size:15px;line-height:1.55;color:var(--text-primary);background:var(--bg-page);-webkit-font-smoothing:antialiased}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit;color:inherit;border:none;background:none}
+button{cursor:pointer}
+ul,ol{list-style:none}
+
+/* ===== FOCUS ===== */
+:focus-visible{outline:2px solid var(--blue-600);outline-offset:3px;border-radius:3px}
+:focus:not(:focus-visible){outline:none}
+
+/* ===== SKIP LINK ===== */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip-link{position:fixed;top:-100px;left:16px;z-index:9999;background:var(--blue-900);color:#fff;padding:10px 18px;border-radius:var(--radius-sm);font-weight:600;transition:top var(--transition)}
+.skip-link:focus{top:12px}
+
+/* ===== NAV ===== */
+.nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border-light)}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-size:22px;font-weight:800;letter-spacing:-.5px;color:var(--blue-900);display:flex;align-items:center;gap:9px}
+.nav-logo-dot{width:10px;height:10px;border-radius:50%;background:var(--amber-600)}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{font-size:14px;font-weight:500;color:var(--text-secondary);transition:color var(--transition)}
+.nav-links a:hover{color:var(--blue-700)}
+.nav-cta{padding:8px 18px;background:var(--blue-900);color:#fff;border-radius:var(--radius-sm);font-size:13px;font-weight:600;transition:background var(--transition)}
+.nav-cta:hover{background:var(--blue-800)}
+.nav-mob{display:none}
+
+/* ===== HERO ===== */
+.hero{padding:60px 24px 40px;text-align:center;max-width:780px;margin:0 auto;position:relative}
+.hero::before{content:'';position:fixed;top:0;left:0;right:0;height:400px;background:linear-gradient(to bottom,var(--blue-50),transparent);z-index:-1;pointer-events:none}
+.hero-badge{display:inline-block;background:var(--amber-100);color:var(--amber-800);font-size:12px;font-weight:700;padding:5px 14px;border-radius:99px;letter-spacing:.4px;margin-bottom:20px;text-transform:uppercase}
+.hero h1{font-size:clamp(28px,5vw,48px);font-weight:800;line-height:1.15;letter-spacing:-1px;color:var(--blue-900);margin-bottom:16px}
+.hero h1 span{color:var(--amber-600)}
+.hero p{font-size:clamp(15px,2.2vw,18px);color:var(--text-secondary);max-width:560px;margin:0 auto 28px;line-height:1.6}
+.hero-cta{display:inline-flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.btn{padding:11px 26px;border-radius:var(--radius-sm);font-weight:600;font-size:14px;transition:background-color var(--transition),color var(--transition),border-color var(--transition),box-shadow var(--transition),filter var(--transition)}
+.btn-primary{background:var(--blue-900);color:#fff}
+.btn-primary:hover{background:var(--blue-800);box-shadow:var(--shadow-md)}
+.btn-outline{border:1.5px solid var(--border);color:var(--text-secondary)}
+.btn-outline:hover{border-color:var(--blue-500);color:var(--blue-700);background:var(--blue-50)}
+
+/* ===== SECTION HEADERS ===== */
+.section-head{text-align:center;max-width:600px;margin:0 auto 36px}
+.section-head h2{font-size:clamp(22px,3.2vw,32px);font-weight:800;letter-spacing:-.6px;color:var(--blue-900);margin-bottom:10px}
+.section-head p{color:var(--text-muted);font-size:15px;line-height:1.6}
+
+/* ===== DASHBOARD ===== */
+.dashboard-section{padding:10px 24px 64px;max-width:1200px;margin:0 auto}
+
+.dashboard{background:var(--bg-surface);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);overflow:hidden;border:1px solid var(--border-light)}
+
+/* --- dashboard top bar --- */
+.db-top{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--border-light);flex-wrap:wrap;gap:14px}
+.db-top h2{font-size:17px;font-weight:700;color:var(--blue-900);letter-spacing:-.3px}
+.db-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.db-demo-badge{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;background:var(--amber-100);color:var(--amber-800);padding:4px 10px;border-radius:99px}
+.db-updated{font-size:12px;color:var(--text-muted)}
+
+/* --- business type toggle --- */
+.db-toggle-wrap{display:flex;align-items:center;gap:14px;padding:14px 24px;border-bottom:1px solid var(--border-light);flex-wrap:wrap}
+.db-toggle-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--text-muted)}
+.db-toggle{display:flex;gap:0;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border)}
+.db-toggle-btn{padding:7px 18px;font-size:13px;font-weight:600;color:var(--text-secondary);background:var(--bg-page);transition:background-color var(--transition),color var(--transition),border-color var(--transition),box-shadow var(--transition),filter var(--transition);white-space:nowrap}
+.db-toggle-btn:hover{background:var(--blue-50);color:var(--blue-700)}
+.db-toggle-btn.active{background:var(--blue-900);color:#fff}
+
+/* --- period filter --- */
+.db-period{display:flex;align-items:center;gap:14px;padding:10px 24px;border-bottom:1px solid var(--border-light);flex-wrap:wrap}
+.db-period-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--text-muted)}
+.db-period-pills{display:flex;gap:4px}
+.db-period-pill{padding:5px 14px;border-radius:99px;font-size:12px;font-weight:600;color:var(--text-muted);transition:background-color var(--transition),color var(--transition),border-color var(--transition),box-shadow var(--transition),filter var(--transition)}
+.db-period-pill:hover{background:var(--blue-50);color:var(--blue-700)}
+.db-period-pill.active{background:var(--blue-100);color:var(--blue-800)}
+
+/* --- dashboard body grid --- */
+.db-body{display:grid;grid-template-columns:1fr 340px;gap:0}
+.db-main{padding:22px 24px;display:flex;flex-direction:column;gap:22px}
+.db-side{border-left:1px solid var(--border-light);padding:22px 24px;display:flex;flex-direction:column;gap:18px;background:var(--blue-50)}
+
+/* --- chart panels --- */
+.chart-panel{background:var(--bg-surface);border:1px solid var(--border-light);border-radius:var(--radius-md);overflow:hidden}
+.chart-panel-header{padding:14px 18px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between}
+.chart-panel-header h3{font-size:13px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.3px}
+.chart-panel-body{padding:10px 8px 4px}
+.chart-panel-body svg{width:100%;height:auto}
+
+/* --- metric side cards --- */
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metric-card{background:var(--bg-surface);border:1px solid var(--border-light);border-radius:var(--radius-md);padding:14px;position:relative;overflow:hidden}
+.metric-card::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0}
+.metric-card.trend-up::before{background:var(--green-500)}
+.metric-card.trend-down::before{background:var(--red-500)}
+.metric-card.trend-neutral::before{background:var(--amber-600)}
+.metric-card-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--text-muted);margin-bottom:4px}
+.metric-card-value{font-family:var(--font-mono);font-size:22px;font-weight:700;color:var(--blue-900);letter-spacing:-.5px;line-height:1.1}
+.metric-card-value small{font-size:13px;font-weight:500;color:var(--text-muted);margin-left:2px}
+.metric-card-change{font-family:var(--font-mono);font-size:12px;font-weight:600;margin-top:4px}
+.metric-card-change.up{color:var(--green-700)}
+.metric-card-change.down{color:var(--red-700)}
+.metric-card-change.neutral{color:var(--amber-800)}
+
+/* --- recommendations --- */
+.rec-panel h4{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--text-muted);margin-bottom:10px}
+.rec-list{display:flex;flex-direction:column;gap:10px}
+.rec-item{display:flex;gap:10px;font-size:13px;line-height:1.5;color:var(--text-secondary);padding:10px 12px;background:var(--bg-surface);border-radius:var(--radius-sm);border:1px solid var(--border-light)}
+.rec-icon{flex-shrink:0;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.rec-icon.info{background:var(--blue-100);color:var(--blue-700)}
+.rec-icon.warn{background:var(--amber-100);color:var(--amber-800)}
+.rec-icon.ok{background:var(--green-100);color:var(--green-700)}
+
+/* --- empty / warning state --- */
+.db-state-note{font-size:12px;color:var(--text-muted);text-align:center;padding:8px;display:none}
+.db-state-note.visible{display:block}
+
+/* ===== FEATURES ===== */
+.features{padding:60px 24px;max-width:1100px;margin:0 auto}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.feat-card{background:var(--bg-surface);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:26px 22px;transition:box-shadow var(--transition)}
+.feat-card:hover{box-shadow:var(--shadow-md)}
+.feat-icon{width:40px;height:40px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px}
+.feat-icon.blue{background:var(--blue-100);color:var(--blue-700)}
+.feat-icon.amber{background:var(--amber-100);color:var(--amber-800)}
+.feat-icon.green{background:var(--green-100);color:var(--green-700)}
+.feat-card h3{font-size:16px;font-weight:700;color:var(--blue-900);letter-spacing:-.3px;margin-bottom:8px}
+.feat-card p{font-size:13px;color:var(--text-muted);line-height:1.6}
+
+/* ===== ONBOARDING ===== */
+.onboarding{padding:40px 24px 64px;max-width:1100px;margin:0 auto}
+.onboard-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:step}
+.onboard-step{counter-increment:step;background:var(--bg-surface);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:28px 22px;position:relative}
+.onboard-step::after{content:counter(step);position:absolute;top:16px;right:18px;font-family:var(--font-mono);font-size:36px;font-weight:800;color:var(--blue-100);line-height:1}
+.onboard-step h3{font-size:15px;font-weight:700;color:var(--blue-900);letter-spacing:-.3px;margin-bottom:8px;padding-right:40px}
+.onboard-step p{font-size:13px;color:var(--text-muted);line-height:1.6}
+.onboard-cta{text-align:center;margin-top:32px}
+
+/* ===== FOOTER ===== */
+.footer{border-top:1px solid var(--border-light);padding:32px 24px;text-align:center;background:var(--bg-surface)}
+.footer p{font-size:13px;color:var(--text-muted);line-height:1.6}
+.footer p:first-child{font-weight:600;color:var(--blue-900);margin-bottom:6px}
+
+/* ===== CHART SPECIFIC ===== */
+.chart-line{fill:none;stroke:var(--blue-600);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.chart-area{fill:url(#areaGrad);opacity:.5}
+.chart-point{fill:var(--bg-surface);stroke:var(--blue-600);stroke-width:2;cursor:pointer;transition:r var(--transition)}
+.chart-point:hover{stroke:var(--amber-600);r:6}
+.chart-grid-line{stroke:var(--border-light);stroke-width:1}
+.chart-axis{font-size:10px;fill:var(--text-muted);font-family:var(--font-mono)}
+.chart-bar{transition:background-color var(--transition),color var(--transition),border-color var(--transition),box-shadow var(--transition),filter var(--transition)}
+.chart-bar:hover{filter:brightness(.88)}
+.chart-bar-label{font-size:10px;fill:var(--text-muted);font-family:var(--font);text-anchor:middle}
+.chart-bar-value{font-size:10px;fill:var(--text-secondary);font-family:var(--font-mono);text-anchor:middle;font-weight:600}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1023px){
+  .db-body{grid-template-columns:1fr}
+  .db-side{border-left:none;border-top:1px solid var(--border-light)}
+  .features-grid,.onboard-steps{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:767px){
+  .nav-links{display:none}
+  .nav-mob{display:block}
+  .hero{padding:40px 16px 30px}
+  .db-top,.db-toggle-wrap,.db-period{padding-left:16px;padding-right:16px}
+  .db-main{padding:16px}
+  .db-side{padding:16px}
+  .metric-grid{grid-template-columns:1fr 1fr}
+  .features-grid,.onboard-steps{grid-template-columns:1fr}
+  .db-toggle-btn{padding:7px 12px;font-size:12px}
+  .db-toggle-wrap{gap:8px}
+}
+@media(max-width:480px){
+  .nav-inner{padding:0 14px}
+  .hero h1{font-size:24px}
+  .hero p{font-size:14px}
+  .dashboard-section{padding:6px 10px 40px}
+  .db-body{gap:0}
+  .db-toggle{width:100%}
+  .db-toggle-btn{flex:1;text-align:center;padding:8px 6px;font-size:11px}
+  .metric-grid{grid-template-columns:1fr}
+  .metric-card-value{font-size:19px}
+}
+
+/* ===== REDUCED MOTION ===== */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  .chart-point:hover{r:4}
+}
+
+/* ===== ANIMATION FOR CHART DRAW ===== */
+@keyframes drawLine{to{stroke-dashoffset:0}}
+@keyframes fadeIn{to{opacity:1}}
+.db-body[data-animate="true"] .chart-line{stroke-dasharray:1000;stroke-dashoffset:1000;animation:drawLine .9s ease forwards}
+.db-body[data-animate="true"] .chart-area{opacity:0;animation:fadeIn .5s .6s ease forwards}
+.db-body[data-animate="true"] .chart-point{opacity:0;animation:fadeIn .3s .4s ease forwards}
+.db-body[data-animate="true"] .chart-bar{opacity:0;animation:fadeIn .4s ease forwards}
+
+/* ===== FEATURE CARD BACKGROUND ===== */
+.feat-card{position:relative;overflow:hidden}
+.feat-card::after{content:'';position:absolute;top:0;right:0;width:100px;height:100px;background:radial-gradient(circle at top right,var(--blue-50),transparent);pointer-events:none}
+
+/* ===== NAV MOBILE FIX ===== */
+@media(max-width:767px){
+  .nav-mob{padding:6px 14px;font-size:12px}
+}
+
+/* ===== PRELOADER ===== */
+.preloader{position:fixed;inset:0;z-index:99999;background:var(--bg-page);display:flex;align-items:center;justify-content:center;transition:opacity .8s ease,visibility .8s}
+.preloader.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.preloader-inner{display:flex;flex-direction:column;align-items:center;gap:20px}
+.preloader-ring{width:60px;height:60px;border-radius:50%;border:2px solid var(--border);border-top-color:var(--blue-600);border-right-color:var(--amber-600);animation:preloader-spin 1s linear infinite}
+@keyframes preloader-spin{to{transform:rotate(360deg)}}
+.preloader-logo{font-family:var(--font);font-size:20px;letter-spacing:.3em;color:var(--blue-900);text-transform:uppercase;font-weight:800}
+</style>
+</head>
+<body>
+
+<div class="preloader" id="preloader">
+  <div class="preloader-inner">
+    <div class="preloader-ring"></div>
+    <span class="preloader-logo">ORBIT</span>
+  </div>
+</div>
+
+<!-- Skip link -->
+<a href="#dashboard" class="skip-link">Перейти к дашборду</a>
+
+<!-- Navigation -->
+<header class="nav" role="banner">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" aria-label="ORBIT — на главную">
+      <span class="nav-logo-dot" aria-hidden="true"></span>ORBIT
+    </a>
+    <nav class="nav-links" aria-label="Основная навигация">
+      <a href="#features">Возможности</a>
+      <a href="#onboarding">Подключение</a>
+      <a href="#dashboard" class="nav-cta">Открыть демо</a>
+    </nav>
+    <a href="#dashboard" class="nav-cta nav-mob">Демо</a>
+  </div>
+</header>
+
+<main>
+  <!-- Hero -->
+  <section class="hero" aria-labelledby="hero-title">
+    <span class="hero-badge">Концептуальный проект</span>
+    <h1 id="hero-title">Аналитика, которую <span>видно</span></h1>
+    <p>ORBIT собирает разрозненные данные вашего бизнеса в&nbsp;единый дашборд с&nbsp;понятными графиками, прогнозами и&nbsp;рекомендациями. Без SQL, без боли.</p>
+    <div class="hero-cta">
+      <a href="#dashboard" class="btn btn-primary">Смотреть демо-дашборд</a>
+      <a href="#features" class="btn btn-outline">Что внутри</a>
+    </div>
+  </section>
+
+  <!-- Dashboard -->
+  <section class="dashboard-section" id="dashboard" aria-labelledby="db-heading">
+    <div class="dashboard" role="region" aria-label="Интерактивный демо-дашборд" aria-live="polite">
+      <!-- Top bar -->
+      <div class="db-top">
+        <h2 id="db-heading">Дашборд: <span id="db-title-name">Магазин</span></h2>
+        <div class="db-meta">
+          <span class="db-demo-badge">Демо-данные</span>
+          <span class="db-updated" id="db-updated" aria-live="polite">Обновлено: 31.07.2026, 14:32 МСК</span>
+        </div>
+      </div>
+
+      <!-- Business type toggle -->
+      <div class="db-toggle-wrap">
+        <span class="db-toggle-label" id="toggle-label">Тип бизнеса</span>
+        <div class="db-toggle" role="radiogroup" aria-labelledby="toggle-label">
+          <button class="db-toggle-btn active" role="radio" aria-checked="true" data-type="shop">Магазин</button>
+          <button class="db-toggle-btn" role="radio" aria-checked="false" data-type="cafe">Кафе</button>
+          <button class="db-toggle-btn" role="radio" aria-checked="false" data-type="agency">Агентство</button>
+        </div>
+      </div>
+
+      <!-- Period filter -->
+      <div class="db-period">
+        <span class="db-period-label" id="period-label">Период</span>
+        <div class="db-period-pills" role="radiogroup" aria-labelledby="period-label">
+          <button class="db-period-pill" role="radio" aria-checked="false" data-period="today">Сегодня</button>
+          <button class="db-period-pill" role="radio" aria-checked="false" data-period="week">Неделя</button>
+          <button class="db-period-pill active" role="radio" aria-checked="true" data-period="month">Месяц</button>
+          <button class="db-period-pill" role="radio" aria-checked="false" data-period="quarter">Квартал</button>
+        </div>
+      </div>
+
+      <!-- Dashboard body -->
+      <div class="db-body" data-animate="false" id="db-body">
+        <!-- Main area: charts -->
+        <div class="db-main">
+          <!-- Line chart -->
+          <div class="chart-panel">
+            <div class="chart-panel-header">
+              <h3>Выручка (тыс. ₽)</h3>
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted)" id="chart-line-period-label">по неделям</span>
+            </div>
+            <div class="chart-panel-body">
+              <svg viewBox="0 0 560 260" role="img" aria-label="График выручки за период" id="chart-line-svg">
+                <defs>
+                  <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="var(--blue-600)" stop-opacity="0.25"/>
+                    <stop offset="100%" stop-color="var(--blue-600)" stop-opacity="0.02"/>
+                  </linearGradient>
+                </defs>
+                <!-- grid & axes rendered by JS -->
+                <!-- data rendered by JS -->
+              </svg>
+            </div>
+          </div>
+
+          <!-- Bar chart -->
+          <div class="chart-panel">
+            <div class="chart-panel-header">
+              <h3>Доход по категориям (тыс. ₽)</h3>
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted)" id="chart-bar-period-label">за месяц</span>
+            </div>
+            <div class="chart-panel-body">
+              <svg viewBox="0 0 500 200" role="img" aria-label="Столбчатая диаграмма доходов по категориям" id="chart-bar-svg">
+                <!-- bars rendered by JS -->
+              </svg>
+            </div>
+          </div>
+
+          <!-- Data disclaimer -->
+          <p class="db-state-note visible" id="db-disclaimer">Все значения демонстрационные и&nbsp;не&nbsp;отражают данные реальных компаний.</p>
+        </div>
+
+        <!-- Side: metrics + recommendations -->
+        <aside class="db-side" aria-label="Ключевые метрики и рекомендации">
+          <div class="metric-grid" id="metric-grid" aria-live="polite" aria-atomic="true">
+            <!-- rendered by JS -->
+          </div>
+          <div class="rec-panel" id="rec-panel" aria-live="polite" aria-atomic="true">
+            <h4>Рекомендации</h4>
+            <div class="rec-list" id="rec-list">
+              <!-- rendered by JS -->
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features" id="features" aria-labelledby="features-heading">
+    <div class="section-head">
+      <h2 id="features-heading">Что умеет ORBIT</h2>
+      <p>Никаких десятков вкладок и&nbsp;экспорта в&nbsp;Excel. Один экран&nbsp;— вся картина.</p>
+    </div>
+    <div class="features-grid">
+      <article class="feat-card">
+        <div class="feat-icon blue" aria-hidden="true">📊</div>
+        <h3>Автоматические отчёты</h3>
+        <p>Подключите источники данных один раз&nbsp;— ORBIT сам соберёт, очистит и&nbsp;визуализирует метрики. Никаких ручных выгрузок.</p>
+      </article>
+      <article class="feat-card">
+        <div class="feat-icon amber" aria-hidden="true">⚡</div>
+        <h3>Прогнозы и аномалии</h3>
+        <p>Встроенные модели машинного обучения подсвечивают резкие отклонения и&nbsp;строят прогноз на&nbsp;основе исторических данных.</p>
+      </article>
+      <article class="feat-card">
+        <div class="feat-icon green" aria-hidden="true">🔔</div>
+        <h3>Умные уведомления</h3>
+        <p>Настройте алерты на&nbsp;падение конверсии, рост оттока или превышение бюджета&nbsp;— и&nbsp;получайте сигналы вовремя.</p>
+      </article>
+      <article class="feat-card">
+        <div class="feat-icon blue" aria-hidden="true">🔗</div>
+        <h3>20+ интеграций</h3>
+        <p>1С, МойСклад, amoCRM, Telegram, Google Analytics, Excel, CSV&nbsp;— данные из любых источников в&nbsp;одном окне.</p>
+      </article>
+      <article class="feat-card">
+        <div class="feat-icon amber" aria-hidden="true">🎯</div>
+        <h3>Сравнение периодов</h3>
+        <p>Смотрите динамику неделя к&nbsp;неделе, месяц к&nbsp;месяцу, год к&nbsp;году. Платформа сама подсветит значимые изменения.</p>
+      </article>
+      <article class="feat-card">
+        <div class="feat-icon green" aria-hidden="true">🛡️</div>
+        <h3>Конфиденциальность данных</h3>
+        <p>Данные хранятся на&nbsp;вашем сервере или в&nbsp;защищённом облаке. Доступ по&nbsp;ролям, аудит действий, шифрование.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Onboarding -->
+  <section class="onboarding" id="onboarding" aria-labelledby="onboard-heading">
+    <div class="section-head">
+      <h2 id="onboard-heading">Подключиться за 3 шага</h2>
+      <p>От идеи до первого дашборда — меньше часа.</p>
+    </div>
+    <div class="onboard-steps">
+      <div class="onboard-step">
+        <h3>Выберите источники</h3>
+        <p>Укажите, откуда брать данные: CRM, касса, эквайринг, Google Sheets. ORBIT сам подберёт оптимальный коннектор.</p>
+      </div>
+      <div class="onboard-step">
+        <h3>Настройте метрики</h3>
+        <p>Выберите готовый шаблон для вашего бизнеса или соберите свой набор KPI через визуальный конструктор.</p>
+      </div>
+      <div class="onboard-step">
+        <h3>Получите дашборд</h3>
+        <p>Платформа сгенерирует персонализированный дашборд. Данные обновляются автоматически по&nbsp;расписанию.</p>
+      </div>
+    </div>
+    <div class="onboard-cta">
+      <a href="#dashboard" class="btn btn-primary" style="padding:13px 32px;font-size:15px">Посмотреть демо</a>
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="footer" role="contentinfo">
+  <a href="../../index.html" style="display:inline-block;margin-bottom:16px;font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;color:var(--blue-700);text-transform:uppercase;border:1px solid var(--blue-200);padding:8px 20px;border-radius:var(--radius-sm);transition:background .3s,color .3s,border-color .3s" onmouseover="this.style.background='var(--blue-900)';this.style.color='#fff';this.style.borderColor='var(--blue-900)'" onmouseout="this.style.background='transparent';this.style.color='var(--blue-700)';this.style.borderColor='var(--blue-200)'">← Все проекты</a>
+  <p>ORBIT — Аналитическая платформа</p>
+  <p>Концептуальный проект для портфолио. Все данные на&nbsp;сайте демонстрационные.</p>
+</footer>
+
+<script>
+window.addEventListener('load',function(){setTimeout(function(){var p=document.getElementById('preloader');if(p)p.classList.add('hidden');},2000);});
+/* ===== DATA ===== */
+const DATA = {
+  shop: {
+    name:'Магазин',
+    metrics:[
+      {label:'Выручка',   value:'2 847 500', unit:'₽', change:'+12.4', trend:'up'},
+      {label:'Средний чек',value:'4 850',    unit:'₽', change:'+3.2',  trend:'up'},
+      {label:'Заказы',    value:'1 247',     unit:'',  change:'+8.7',  trend:'up'},
+      {label:'Конверсия', value:'3.8',       unit:'%', change:'+0.5',  trend:'up'},
+      {label:'Удержание', value:'64',        unit:'%', change:'−1.2',  trend:'down'},
+      {label:'Маржа',     value:'32.5',      unit:'%', change:'+1.1',  trend:'up'},
+    ],
+    chartRevenue:[120,135,148,160,175,190,210],
+    chartCategories:[
+      {name:'Электроника',value:850},
+      {name:'Одежда',value:620},
+      {name:'Дом',value:480},
+      {name:'Спорт',value:390},
+      {name:'Книги',value:280},
+    ],
+    recommendations:[
+      {icon:'ok',text:'Рост выручки на&nbsp;12.4% опережает план. Рекомендуется масштабировать категорию «Электроника».'},
+      {icon:'info',text:'Конверсия стабильно растёт&nbsp;— текущие маркетинговые кампании работают эффективно.'},
+      {icon:'warn',text:'Удержание снизилось на&nbsp;1.2 п.п. Проверьте программу лояльности и&nbsp;триггерные рассылки.'},
+    ],
+    updated:'31.07.2026, 14:32 МСК'
+  },
+  cafe: {
+    name:'Кафе',
+    metrics:[
+      {label:'Выручка',   value:'892 400', unit:'₽', change:'+4.7',  trend:'up'},
+      {label:'Средний чек',value:'620',    unit:'₽', change:'−0.8',  trend:'down'},
+      {label:'Заказы',    value:'4 892',   unit:'',  change:'+11.3', trend:'up'},
+      {label:'Конверсия', value:'6.1',     unit:'%', change:'+0.3',  trend:'up'},
+      {label:'Удержание', value:'72',      unit:'%', change:'+2.1',  trend:'up'},
+      {label:'Маржа',     value:'44.8',    unit:'%', change:'−0.5',  trend:'down'},
+    ],
+    chartRevenue:[85,92,88,95,102,98,110],
+    chartCategories:[
+      {name:'Кофе и напитки',value:320},
+      {name:'Выпечка',value:245},
+      {name:'Основные блюда',value:198},
+      {name:'Десерты',value:156},
+      {name:'Завтраки',value:120},
+    ],
+    recommendations:[
+      {icon:'warn',text:'Средний чек снизился на&nbsp;0.8%. Предложите комбо-наборы для увеличения суммы заказа.'},
+      {icon:'ok',text:'Количество заказов растёт (+11.3%)&nbsp;— отличный сигнал для расширения меню и&nbsp;посадки.'},
+      {icon:'ok',text:'Удержание 72%&nbsp;— один из лучших показателей в&nbsp;сегменте общепита.'},
+    ],
+    updated:'31.07.2026, 14:35 МСК'
+  },
+  agency: {
+    name:'Агентство',
+    metrics:[
+      {label:'Выручка',   value:'3 120 000',unit:'₽', change:'−2.1', trend:'down'},
+      {label:'Средний чек',value:'85 000',  unit:'₽', change:'+5.5', trend:'up'},
+      {label:'Проектов',  value:'47',       unit:'',  change:'−15.0',trend:'down'},
+      {label:'Конверсия', value:'12.3',     unit:'%', change:'−0.8', trend:'down'},
+      {label:'Удержание', value:'58',       unit:'%', change:'−4.3', trend:'down'},
+      {label:'Маржа',     value:'38.1',     unit:'%', change:'+2.2', trend:'up'},
+    ],
+    chartRevenue:[200,150,320,180,280,350,290],
+    chartCategories:[
+      {name:'Разработка',value:1200},
+      {name:'Дизайн',value:850},
+      {name:'Маркетинг',value:680},
+      {name:'Консалтинг',value:520},
+      {name:'Аналитика',value:410},
+    ],
+    recommendations:[
+      {icon:'warn',text:'Снижение количества проектов на&nbsp;15%. Проверьте воронку лидогенерации и&nbsp;каналы привлечения.'},
+      {icon:'ok',text:'Средний чек вырос на&nbsp;5.5%&nbsp;— клиенты готовы платить больше за&nbsp;качественные услуги.'},
+      {icon:'warn',text:'Удержание падает (−4.3 п.п.). Внедрите систему регулярных touch-points с&nbsp;клиентами.'},
+    ],
+    updated:'31.07.2026, 14:38 МСК'
+  }
+};
+
+const PERIODS = {
+  today:   {labels:['09:00','11:00','13:00','15:00','17:00','19:00','21:00'], lineLabel:'по часам',    barLabel:'за сегодня'},
+  week:    {labels:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],                         lineLabel:'по дням',     barLabel:'за неделю'},
+  month:   {labels:['1 нед.','2 нед.','3 нед.','4 нед.'],                        lineLabel:'по неделям',  barLabel:'за месяц'},
+  quarter: {labels:['Апр','Май','Июн','Июл'],                                    lineLabel:'по месяцам',  barLabel:'за квартал'},
+};
+
+/* ===== STATE ===== */
+let state = { business:'shop', period:'month' };
+let prefersReducedMotion = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* ===== DOM refs ===== */
+const $ = (s,ctx=document) => ctx.querySelector(s);
+const $$ = (s,ctx=document) => Array.from(ctx.querySelectorAll(s));
+
+const dom = {
+  dbBody:       $('#db-body'),
+  dbTitleName:  $('#db-title-name'),
+  dbUpdated:    $('#db-updated'),
+  toggleBtns:   $$('.db-toggle-btn'),
+  periodPills:  $$('.db-period-pill'),
+  metricGrid:   $('#metric-grid'),
+  recList:      $('#rec-list'),
+  lineSvg:      $('#chart-line-svg'),
+  barSvg:       $('#chart-bar-svg'),
+  linePeriod:   $('#chart-line-period-label'),
+  barPeriod:    $('#chart-bar-period-label'),
+};
+
+/* ===== INIT ===== */
+function init(){
+  bindToggles();
+  render();
+}
+init();
+
+/* ===== BIND EVENTS ===== */
+function bindToggles(){
+  dom.toggleBtns.forEach(btn => {
+    btn.addEventListener('click',()=>{
+      if(btn.dataset.type===state.business) return;
+      dom.toggleBtns.forEach(b=>{b.classList.remove('active');b.setAttribute('aria-checked','false')});
+      btn.classList.add('active');
+      btn.setAttribute('aria-checked','true');
+      state.business=btn.dataset.type;
+      render();
+    });
+    btn.addEventListener('keydown',e=>{
+      const items=dom.toggleBtns;
+      const idx=items.indexOf(btn);
+      if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();const next=items[(idx+1)%items.length];next.focus();next.click()}
+      if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();const prev=items[(idx-1+items.length)%items.length];prev.focus();prev.click()}
+    });
+  });
+
+  dom.periodPills.forEach(pill=>{
+    pill.addEventListener('click',()=>{
+      if(pill.dataset.period===state.period) return;
+      dom.periodPills.forEach(p=>{p.classList.remove('active');p.setAttribute('aria-checked','false')});
+      pill.classList.add('active');
+      pill.setAttribute('aria-checked','true');
+      state.period=pill.dataset.period;
+      render();
+    });
+  });
+}
+
+/* ===== RENDER ===== */
+function render(){
+  const d = DATA[state.business];
+  const p = PERIODS[state.period];
+
+  /* update top bar */
+  dom.dbTitleName.textContent = d.name;
+  dom.dbUpdated.textContent = 'Обновлено: '+d.updated;
+  dom.linePeriod.textContent = p.lineLabel;
+  dom.barPeriod.textContent = p.barLabel;
+
+  /* animate flag */
+  if(!prefersReducedMotion){
+    dom.dbBody.setAttribute('data-animate','true');
+    setTimeout(()=>dom.dbBody.setAttribute('data-animate','false'),1000);
+  }
+
+  /* render metric cards */
+  renderMetrics(d.metrics);
+
+  /* render recommendations */
+  renderRecommendations(d.recommendations);
+
+  /* render charts */
+  renderLineChart(d.chartRevenue, p.labels);
+  renderBarChart(d.chartCategories);
+}
+
+/* ===== METRICS ===== */
+function renderMetrics(metrics){
+  dom.metricGrid.innerHTML = metrics.map(m=>`
+    <div class="metric-card trend-${m.trend}">
+      <div class="metric-card-label">${m.label}</div>
+      <div class="metric-card-value">${m.value}<small>${m.unit}</small></div>
+      <div class="metric-card-change ${m.trend==='up'?'up':m.trend==='down'?'down':'neutral'}">${m.change}%</div>
+    </div>
+  `).join('');
+}
+
+/* ===== RECOMMENDATIONS ===== */
+function renderRecommendations(recs){
+  dom.recList.innerHTML = recs.map(r=>`
+    <div class="rec-item">
+      <div class="rec-icon ${r.icon}" aria-hidden="true">${r.icon==='ok'?'✓':r.icon==='warn'?'!':'i'}</div>
+      <span>${r.text}</span>
+    </div>
+  `).join('');
+}
+
+/* ===== LINE CHART ===== */
+function renderLineChart(data, labels){
+  const svg = dom.lineSvg;
+  const W=560, H=260;
+  const pad={top:24,right:28,bottom:36,left:52};
+  const plotW=W-pad.left-pad.right;
+  const plotH=H-pad.top-pad.bottom;
+
+  const dMin=0;
+  const dMax=Math.max(...data)*1.15;
+  const yScale = v => pad.top + plotH - ((v-dMin)/(dMax-dMin))*plotH;
+  const xScale = i => pad.left + (i/(data.length-1))*plotW;
+
+  let html='<defs><linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2d5cc4" stop-opacity="0.22"/><stop offset="100%" stop-color="#2d5cc4" stop-opacity="0.02"/></linearGradient></defs>';
+
+  /* grid lines */
+  const gridLines=5;
+  for(let i=0;i<=gridLines;i++){
+    const val = dMin + (dMax-dMin)*(i/gridLines);
+    const y = yScale(val);
+    html+=`<line x1="${pad.left}" y1="${y.toFixed(1)}" x2="${pad.left+plotW}" y2="${y.toFixed(1)}" class="chart-grid-line"/>`;
+    html+=`<text x="${pad.left-8}" y="${(y+3).toFixed(1)}" class="chart-axis" text-anchor="end">${Math.round(val)}</text>`;
+  }
+
+  /* x labels */
+  labels.forEach((l,i)=>{
+    const x = xScale(i);
+    html+=`<text x="${x.toFixed(1)}" y="${H-8}" class="chart-axis" text-anchor="middle">${l}</text>`;
+  });
+
+  /* area path */
+  let areaD = `M${xScale(0).toFixed(1)} ${pad.top+plotH}`;
+  data.forEach((v,i)=> areaD += ` L${xScale(i).toFixed(1)} ${yScale(v).toFixed(1)}`);
+  areaD += ` L${xScale(data.length-1).toFixed(1)} ${pad.top+plotH} Z`;
+  html += `<path d="${areaD}" class="chart-area"/>`;
+
+  /* line path */
+  let lineD = '';
+  data.forEach((v,i)=>{
+    lineD += (i===0?'M':'L') + `${xScale(i).toFixed(1)} ${yScale(v).toFixed(1)} `;
+  });
+  html += `<path d="${lineD.trim()}" class="chart-line"/>`;
+
+  /* points */
+  data.forEach((v,i)=>{
+    const x=xScale(i), y=yScale(v);
+    html += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" class="chart-point"><title>${labels[i]}: ${v} тыс. ₽</title></circle>`;
+  });
+
+  svg.innerHTML=html;
+}
+
+/* ===== BAR CHART ===== */
+function renderBarChart(categories){
+  const svg = dom.barSvg;
+  const W=500, H=200;
+  const pad={top:20,right:16,bottom:36,left:16};
+  const plotW=W-pad.left-pad.right;
+  const plotH=H-pad.top-pad.bottom;
+
+  const maxVal = Math.max(...categories.map(c=>c.value))*1.12;
+  const barGap = 14;
+  const barW = (plotW - barGap*(categories.length-1)) / categories.length;
+  const colors = ['#162d6e','#2d5cc4','#4a78e0','#7b9eeb','#a3bcf0'];
+
+  let html='';
+
+  /* baseline */
+  html += `<line x1="${pad.left}" y1="${pad.top+plotH}" x2="${pad.left+plotW}" y2="${pad.top+plotH}" stroke="#dce1f0" stroke-width="1"/>`;
+
+  categories.forEach((c,i)=>{
+    const barH = (c.value/maxVal)*plotH;
+    const x = pad.left + i*(barW+barGap);
+    const y = pad.top + plotH - barH;
+    const col = colors[i] || colors[colors.length-1];
+    html += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${barH.toFixed(1)}" rx="3" fill="${col}" class="chart-bar"><title>${c.name}: ${c.value} тыс. ₽</title></rect>`;
+    html += `<text x="${(x+barW/2).toFixed(1)}" y="${(y-6).toFixed(1)}" class="chart-bar-value">${c.value}</text>`;
+    html += `<text x="${(x+barW/2).toFixed(1)}" y="${H-6}" class="chart-bar-label">${c.name}</text>`;
+  });
+
+  svg.innerHTML=html;
+}
+</script>
+</body>
+</html>
